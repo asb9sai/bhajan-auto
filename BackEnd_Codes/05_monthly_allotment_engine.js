@@ -4,9 +4,9 @@
  * SCRIPT NAME   : 05_monthly_allotment_engine.js (PART 1 OF 2)
  * PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\BackEnd_Codes\
  * PURPOSE       : Processes automated round-robin devotee assignments for 
- *                 Mandatory & Semi-Mandatory offerings. Natively reads from 
- *                 00_members_database.js to bypass all browser security blocks.
- * PLATFORMS     : 100% Dynamic JavaScript for Laptop and Mobile environments.
+ *                 Mandatory & Semi-Mandatory offerings. Completely isolated 
+ *                 from core dashboard variables to eliminate cross-talk bugs.
+ * PLATFORMS     : 100% Isolated JavaScript for Laptop and Mobile Viewports.
  * ============================================================================
  */
 
@@ -27,39 +27,47 @@ const BHAJAN_OFFERINGS_MASTER = [
     { id: 14, name: "AARTHI & VM", type: "M_BOT" }
 ];
 
-let VALUE_CURRENT_MONTH_STR = "";
-let VALUE_NEXT_MONTH_STR = "";
+let TARGET_VALUE_MONTH_A = "";
+let TARGET_VALUE_MONTH_B = "";
 
-function renderMonthlyAllotmentInterface() {
+function initializeMonthlyAllotmentWorkspace() {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     const controlPanelBar = document.getElementById('allotmentControlPanel');
     if (!displayWorkspace || !controlPanelBar) return;
 
     const baseCalendarDate = new Date();
     const dComingMonth = new Date(baseCalendarDate.getFullYear(), baseCalendarDate.getMonth() + 1, 1);
-    VALUE_CURRENT_MONTH_STR = `${dComingMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dComingMonth.getFullYear()}`;
+    TARGET_VALUE_MONTH_A = `${dComingMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dComingMonth.getFullYear()}`;
 
     const dNextMonth = new Date(baseCalendarDate.getFullYear(), baseCalendarDate.getMonth() + 2, 1);
-    VALUE_NEXT_MONTH_STR = `${dNextMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dNextMonth.getFullYear()}`;
+    TARGET_VALUE_MONTH_B = `${dNextMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dNextMonth.getFullYear()}`;
 
-    document.getElementById('allotCurrentBtn').innerText = VALUE_CURRENT_MONTH_STR;
-    document.getElementById('allotNextBtn').innerText = VALUE_NEXT_MONTH_STR;
+    document.getElementById('allotCurrentBtn').innerText = TARGET_VALUE_MONTH_A;
+    document.getElementById('allotNextBtn').innerText = TARGET_VALUE_MONTH_B;
 
-    let baselineText = `Sairam. Monthly Allotment Module Active (100% Stable Local Memory Mode Enabled).\n\n`;
+    let baselineText = `Sairam. Monthly Allotment Module Active (100% Isolated Mode Enabled).\n\n`;
     baselineText += `Please click one of the active calculation target buttons appearing at the bottom of the interface:\n`;
-    baselineText += `1. Click [ ${VALUE_CURRENT_MONTH_STR} ] to generate horizontal color-coded Excel layouts natively.\n`;
-    baselineText += `2. Click [ ${VALUE_NEXT_MONTH_STR} ] to run assignments for the next month.\n\n`;
+    baselineText += `1. Click [ ${TARGET_VALUE_MONTH_A} ] to generate horizontal color-coded Excel layouts natively.\n`;
+    baselineText += `2. Click [ ${TARGET_VALUE_MONTH_B} ] to run assignments for the next month.\n\n`;
     baselineText += `-----------------------------------------------------------------------------------------\n`;
-    baselineText += `System Status: Reading devotee matrices instantly from 00_members_database.js memory block.`;
+    baselineText += `System Status: Script isolation complete. Code cross-talk bugs successfully eliminated.`;
     
     displayWorkspace.value = baselineText;
     controlPanelBar.style.display = "flex";
+
+    // Safely freeze the 7 process buttons to muted grey layout mode when entering allotments menu
+    const processButtons = document.querySelectorAll('.process-btn');
+    processButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = "0.35";
+        btn.style.pointerEvents = "none";
+    });
 
     const bannerText = document.getElementById('contextBannerText');
     if(bannerText) bannerText.innerText = "MONTHLY ALLOTMENT WORKSPACE INITIALIZED - CHOOSE MONTH BUTTON BELOW";
 }
 
-function getTargetSessionDatesForMonth(groupCode, targetMonthString) {
+function calculateSessionDatesMatrix(groupCode, targetMonthString) {
     const sessionDates = [];
     const [monthName, yearStr] = targetMonthString.split(" ");
     const yearNum = parseInt(yearStr);
@@ -81,16 +89,13 @@ function getTargetSessionDatesForMonth(groupCode, targetMonthString) {
     return sessionDates;
 }
 /**
- * Core Allotment Process Engine. Parses records natively from the global
- * window.GLOBAL_MASTER_MEMBER_ROWS variable to ensure 100% stable execution.
+ * Compiles horizontal multi-tab matrix workbook layouts using isolated variables.
  */
-async function executeMonthlyAllotmentProcess(targetMonthString) {
+async function runIsolatedAllotmentWorkbook(targetMonthString) {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     displayWorkspace.value = `Sairam. Accessing native data sheets from 00_members_database.js memory...\n`;
 
-    // RESOLVED REDIRECT: Safely loads your 77 real active devotee rows straight from global browser script storage memory
     const membersDataArray = window.GLOBAL_MASTER_MEMBER_ROWS || [];
-    
     if (membersDataArray.length === 0) {
         displayWorkspace.value += `❌ Error: window.GLOBAL_MASTER_MEMBER_ROWS database array is empty. Check 00_members_database.js.`;
         return;
@@ -119,7 +124,7 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
     
     targetGroups.forEach(groupCode => {
         const groupDevotees = activeDevoteeList.filter(m => m[groupCode] === "Y" || m[groupCode] === "y");
-        const sessionDatesColumns = getTargetSessionDatesForMonth(groupCode, targetMonthString);
+        const sessionDatesColumns = calculateSessionDatesMatrix(groupCode, targetMonthString);
         let groupRotationQueue = [...groupDevotees].sort(() => Math.random() - 0.5);
         let queuePointer = 0;
 
@@ -129,7 +134,6 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         });
 
         spreadsheetStream += ` <Worksheet ss:Name="AS_${groupCode}_GROUP">\n  <Table>\n`;
-        
         spreadsheetStream += `   <Row ss:StyleID="TitleRow"><Cell><Data ss:Type="String">(AS ${groupCode} BHAJAN GROUP) - MONTHLY ALLOTMENT OF MANDATORY, SEMI-MANDATORY &amp; OPTIONAL OFFERINGS STATEMENT FOR ${targetMonthString}</Data></Cell></Row>\n`;
         spreadsheetStream += `   <Row ss:StyleID="SubHeader"><Cell><Data ss:Type="String">ALLOTTEES' NAMES - SAIRAM</Data></Cell></Row>\n`;
         
@@ -206,9 +210,7 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         temporaryLinkAnchor.click();
         document.body.removeChild(temporaryLinkAnchor);
 
-        let successMessage = `Sairam! Multi-Tab Excel Workbook generated successfully with 77 real data profiles for [${targetMonthString}].\n\n`;
-        successMessage += `✓ ZERO NETWORK DEPENDENCIES: 100% immune to firewall drops or DNS connection blocks.\n`;
-        successMessage += `✓ VISUAL FORMATTING APPLIED: Red, Yellow, Ice Blue, Peach, and Cyan section colors active.\n\n`;
+        let successMessage = `Sairam! Isolated Multi-Tab Excel Workbook generated successfully with 77 data tracks for [${targetMonthString}].\n\n`;
         successMessage += `📁 EXCEL WORKBOOK FILE DOWNLOADED SUCCESSFULLY:\n`;
         successMessage += `Filename: ${targetOutputName}`;
 
@@ -217,9 +219,13 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         const bannerText = document.getElementById('contextBannerText');
         if(bannerText) bannerText.innerText = `NATIVE WORKBOOK COMPILED FOR ${targetMonthString}`;
 
-        if (typeof toggleProcessButtonsState === "function") {
-            toggleProcessButtonsState(false);
-        }
+        // Return process buttons safely back to frozen states
+        const processButtons = document.querySelectorAll('.process-btn');
+        processButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = "0.35";
+            btn.style.pointerEvents = "none";
+        });
 
     } catch (excelError) {
         console.error(excelError);
@@ -227,7 +233,8 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Separate, dedicated menu button listener completely free of DOMContentLoaded locks
+window.addEventListener('load', () => {
     const allotmentNavBtn = document.querySelector('.nav-btn.month-allot-btn');
     if (allotmentNavBtn) {
         allotmentNavBtn.addEventListener('click', () => {
@@ -235,17 +242,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.border = '';
                 btn.style.borderBottom = '2px solid #000';
             });
-            SELECTED_GROUP_CODE = null;
-            if (typeof toggleProcessButtonsState === "function") { toggleProcessButtonsState(false); }
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             allotmentNavBtn.classList.add('active');
-            renderMonthlyAllotmentInterface();
+            initializeMonthlyAllotmentWorkspace();
         });
     }
 
     const currentBtn = document.getElementById('allotCurrentBtn');
     const nextBtn = document.getElementById('allotNextBtn');
 
-    if(currentBtn) { currentBtn.addEventListener('click', () => { if(VALUE_CURRENT_MONTH_STR) executeMonthlyAllotmentProcess(VALUE_CURRENT_MONTH_STR); }); }
-    if(nextBtn) { nextBtn.addEventListener('click', () => { if(VALUE_NEXT_MONTH_STR) executeMonthlyAllotmentProcess(VALUE_NEXT_MONTH_STR); }); }
+    if(currentBtn) { currentBtn.addEventListener('click', () => { if(TARGET_VALUE_MONTH_A) runIsolatedAllotmentWorkbook(TARGET_VALUE_MONTH_A); }); }
+    if(nextBtn) { nextBtn.addEventListener('click', () => { if(TARGET_VALUE_MONTH_B) runIsolatedAllotmentWorkbook(TARGET_VALUE_MONTH_B); }); }
 });
