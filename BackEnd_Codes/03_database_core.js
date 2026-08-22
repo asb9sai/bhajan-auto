@@ -5,7 +5,7 @@
  * PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\BackEnd_Codes\
  * PURPOSE       : Establishes secure serverless operations over GitHub, and
  *                 manages interactive active/inactive states of process buttons.
- *                 Isolates top navigation button pathways to prevent system locks.
+ *                 Reads data seamlessly using public repository fetching pathways.
  * PLATFORMS     : Unified execution layer for Laptop and Mobile environments.
  * ============================================================================
  */
@@ -14,29 +14,41 @@ const GITHUB_DATABASE_CONFIG = {
     owner: 'asb9sai',                         
     repo: 'bhajan-auto',                      
     path: 'ASMbrMstr.json',                   
-    token: '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'                // Keep your active secure ghp_ token here
+    token: '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' // Preserved for secure write updates
 };
 
 // Global administrative selection tracking tokens
 let SELECTED_GROUP_CODE = null;
 let SELECTED_PROCESS_NAME = null;
 
+/**
+ * 1. READ OPERATION (UPDATED)
+ * Fetches the member master records directly from the public GitHub Pages URL.
+ * This completely bypasses token blocks and resolves local browser network restrictions.
+ */
 async function fetchMemberMasterFromVault() {
-    const targetUrl = `https://github.com{GITHUB_DATABASE_CONFIG.owner}/${GITHUB_DATABASE_CONFIG.repo}/contents/${GITHUB_DATABASE_CONFIG.path}`;
+    // Direct public web path to your data file
+    const publicDataUrl = `https://githubusercontent.com{GITHUB_DATABASE_CONFIG.owner}/${GITHUB_DATABASE_CONFIG.repo}/main/${GITHUB_DATABASE_CONFIG.path}`;
+    
     try {
-        const networkResponse = await fetch(targetUrl, {
+        const networkResponse = await fetch(publicDataUrl, {
             method: 'GET',
-            headers: { 
-                'Authorization': `token ${GITHUB_DATABASE_CONFIG.token}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
+            cache: 'no-store' // Enforces loading the absolute freshest records every time
         });
-        if (!networkResponse.ok) throw new Error(`Status: ${networkResponse.status}`);
-        const rawData = await networkResponse.json();
-        const decodedString = decodeURIComponent(escape(atob(rawData.content)));
-        return { members: JSON.parse(decodedString), sha: rawData.sha };
+
+        if (!networkResponse.ok) {
+            throw new Error(`Public fetch failed with HTTP status: ${networkResponse.status}`);
+        }
+
+        const membersArray = await networkResponse.json();
+        
+        // Return structured format matching expected application logic fields
+        return { 
+            members: membersArray, 
+            sha: null // SHA is not required for open public read operations
+        };
     } catch (databaseError) {
-        console.error("[03_database_core.js] Read Exception:", databaseError);
+        console.error("[03_database_core.js] Open Read Exception:", databaseError);
         return null;
     }
 }
@@ -68,9 +80,6 @@ async function saveMemberMasterToVault(updatedMembersArray, currentSha) {
 
 /**
  * State Controller Function: Manages active/inactive behavior of process buttons.
- * Adjusts opacity transparency metrics and triggers system lockout properties cleanly.
- * 
- * @param {boolean} shouldEnable - True to awaken elements, False to grey them out.
  */
 function toggleProcessButtonsState(shouldEnable) {
     const processButtons = document.querySelectorAll('.process-btn');
@@ -91,8 +100,7 @@ function toggleProcessButtonsState(shouldEnable) {
 }
 
 /**
- * Formats and renders the dynamic confirmation running text string into your 
- * DESCRIPTION box to ensure clear double-confirmation layout parameters.
+ * Formats and renders the dynamic confirmation running text string into your DESCRIPTION box.
  */
 function updateDashboardContextBanner() {
     const valueDisplayContainer = document.getElementById('contextBannerText');
@@ -103,15 +111,12 @@ function updateDashboardContextBanner() {
         return;
     }
 
-    // Determine the full expanded group title string name
     let expansionTitleMap = { "WED": "WEDNESDAY", "FRI": "FRIDAY", "ARD": "ARDRA", "MAH": "MAHILAS", "SPL": "SPECIAL BHAJAN", "PRM": "PRM" };
     const cleanGroupTitle = expansionTitleMap[SELECTED_GROUP_CODE] || SELECTED_GROUP_CODE;
     
-    // Extract current selection from the corresponding group dropdown element channel
     const matchingDropdownElement = document.getElementById(`dropdown_${SELECTED_GROUP_CODE}`);
     let activeDateString = (matchingDropdownElement && matchingDropdownElement.value) ? matchingDropdownElement.value : "CHOSEN DATE";
 
-    // Render configuration tracking text
     if (SELECTED_PROCESS_NAME) {
         valueDisplayContainer.innerText = `AS ${cleanGroupTitle} GROUP - ${activeDateString} - ${SELECTED_PROCESS_NAME} ARE BEING PROCESSED`;
     } else {
@@ -121,16 +126,12 @@ function updateDashboardContextBanner() {
 
 // Binds interface listeners seamlessly on system boot sequence initialization
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize process actions panel to locked grey default layout properties
     toggleProcessButtonsState(false);
     
-    // 2. Setup interactive group box button operational click loops
     document.querySelectorAll('.group-btn').forEach(buttonElement => {
         buttonElement.addEventListener('click', (eventObject) => {
-            // Clear any old highlights from navigation buttons first
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             
-            // Remove previous thick border focuses across all item blocks
             document.querySelectorAll('.group-btn').forEach(btn => {
                 btn.style.border = '';
                 btn.style.borderBottom = '2px solid #000';
@@ -139,28 +140,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const clickedBtn = eventObject.currentTarget;
             clickedBtn.style.border = '4px solid #000000';
             
-            // Register target working parameters
             SELECTED_GROUP_CODE = clickedBtn.getAttribute('data-group');
-            SELECTED_PROCESS_NAME = null; // Clear old process selection text focus
+            SELECTED_PROCESS_NAME = null; 
             
-            // Wake up processing elements row and make text bold black 
             toggleProcessButtonsState(true);
-            
             updateDashboardContextBanner();
         });
     });
 
-    // 3. Monitor individual dropdown adjustments to rewrite selection strings live
     document.querySelectorAll('.date-dropdown').forEach(dropdownElement => {
         dropdownElement.addEventListener('change', () => {
             updateDashboardContextBanner();
         });
     });
 
-    // 4. Track process action clicks to format final verification tracking string
     document.querySelectorAll('.process-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            // Isolate process name safely stripping nested subtitle layout text blocks
             let fullTextString = e.currentTarget.innerText;
             if (fullTextString.includes('\n')) {
                 SELECTED_PROCESS_NAME = fullTextString.split('\n')[0].trim();
@@ -170,18 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 SELECTED_PROCESS_NAME = fullTextString.trim();
             }
             
-            // Remove arrow indicators if present inside text string tokens
             SELECTED_PROCESS_NAME = SELECTED_PROCESS_NAME.replace('▼', '').trim();
-            
             updateDashboardContextBanner();
             
-            // Update workspace status inside clipboard data view container
             const displayArea = document.getElementById('whatsappClipboardArea');
             displayArea.value = `Sairam!\nRunning automation scripts for matching criteria keys...\n- Focus Target: AS ${SELECTED_GROUP_CODE} Group\n- Action Process: ${SELECTED_PROCESS_NAME}`;
         });
     });
 
-    // 5. Secure clipboard copying operations routines
     document.getElementById('copyTextBtn').addEventListener('click', () => {
         const txtArea = document.getElementById('whatsappClipboardArea');
         txtArea.select();
