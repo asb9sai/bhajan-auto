@@ -5,7 +5,7 @@
  * PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\BackEnd_Codes\
  * PURPOSE       : Processes automated round-robin devotee assignments for 
  *                 Mandatory & Semi-Mandatory offerings. Dynamically fetches 
- *                 records directly from ASMbrMstr.json to avoid hardcoding.
+ *                 records directly from ASMbrMstr.json to completely avoid hardcoding.
  * PLATFORMS     : 100% Dynamic JavaScript for Laptop and Mobile environments.
  * ============================================================================
  */
@@ -36,7 +36,6 @@ function renderMonthlyAllotmentInterface() {
     if (!displayWorkspace || !controlPanelBar) return;
 
     const baseCalendarDate = new Date();
-
     const dComingMonth = new Date(baseCalendarDate.getFullYear(), baseCalendarDate.getMonth() + 1, 1);
     VALUE_CURRENT_MONTH_STR = `${dComingMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dComingMonth.getFullYear()}`;
 
@@ -48,7 +47,7 @@ function renderMonthlyAllotmentInterface() {
 
     let baselineText = `Sairam. Monthly Allotment Module Active (100% Dynamic Database Mode).\n\n`;
     baselineText += `Please click one of the active calculation target buttons appearing at the bottom of the interface:\n`;
-    baselineText += `1. Click [ ${VALUE_CURRENT_MONTH_STR} ] to generate horizontal Excel layouts natively.\n`;
+    baselineText += `1. Click [ ${VALUE_CURRENT_MONTH_STR} ] to generate horizontal color-coded Excel sheets.\n`;
     baselineText += `2. Click [ ${VALUE_NEXT_MONTH_STR} ] to run assignments for the next month.\n\n`;
     baselineText += `-----------------------------------------------------------------------------------------\n`;
     baselineText += `System Status: Hardcoded placeholder names completely removed. Dynamic server tracking active.`;
@@ -83,20 +82,21 @@ function getTargetSessionDatesForMonth(groupCode, targetMonthString) {
 }
 /**
  * Dynamic Core Workbook Calculation Engine.
- * Connects directly and instantly to your raw GitHub file storage path to bypass server delays.
+ * Connects over a tokenless route directly to your live ASMbrMstr.json database file.
  */
 async function executeMonthlyAllotmentProcess(targetMonthString) {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     displayWorkspace.value = `Sairam. Connecting dynamically to raw repository storage to pull active member records...\n`;
 
     try {
-        // INSTANT FETCH PATH: Pulls your real data text directly from raw storage to bypass background cache blocks
+        // INSTANT FETCH PATHWAY: Pulls your real data text directly from raw storage to bypass cache blocks
         const publicDataResponse = await fetch('https://githubusercontent.com', { cache: 'no-store' });
         if (!publicDataResponse.ok) throw new Error("Database file read error. Verify ASMbrMstr.json path location.");
         const membersDataArray = await publicDataResponse.json();
         
+        // RECALIBRATED FILTER: Enforces tracking active devotees utilizing your true database ("STS": "A")
         const activeDevoteeList = membersDataArray.filter(member => member.STS === "A" || member.STS === "a");
-        displayWorkspace.value += `✓ Successfully loaded ${activeDevoteeList.length} active devotees from raw storage!\n`;
+        displayWorkspace.value += `✓ Successfully loaded ${activeDevoteeList.length} active devotees from live raw storage!\n`;
         displayWorkspace.value += `Executing round-robin balancing allocations and writing visual style rules...\n`;
 
         let spreadsheetStream = '<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>\n' +
@@ -118,8 +118,7 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         
         targetGroups.forEach(groupCode => {
             const groupDevotees = activeDevoteeList.filter(m => m[groupCode] === "Y" || m[groupCode] === "y");
-            if (groupDevotees.length === 0) return;
-
+            
             const sessionDatesColumns = getTargetSessionDatesForMonth(groupCode, targetMonthString);
             let groupRotationQueue = [...groupDevotees].sort(() => Math.random() - 0.5);
             let queuePointer = 0;
@@ -130,9 +129,13 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
             });
 
             spreadsheetStream += ` <Worksheet ss:Name="AS_${groupCode}_GROUP">\n  <Table>\n`;
-            spreadsheetStream += `   <Row ss:StyleID="TitleRow"><Cell><Data ss:Type="String">(AS ${groupCode} BHAJAN GROUP) - MONTHLY ALLOTMENT FOR ${targetMonthString}</Data></Cell></Row>\n`;
-            spreadsheetStream += `   <Row ss:StyleID="SubHeader"><Cell><Data ss:Type="String">ALLOTTEES Names - SAIRAM</Data></Cell></Row>\n`;
             
+            // Apply Title Background Fill Color (#FFFF00)
+            spreadsheetStream += `   <Row ss:StyleID="TitleRow"><Cell><Data ss:Type="String">(AS ${groupCode} BHAJAN GROUP) - MONTHLY ALLOTMENT OF MANDATORY, SEMI-MANDATORY &amp; OPTIONAL OFFERINGS STATEMENT FOR ${targetMonthString}</Data></Cell></Row>\n`;
+            // Apply Sub-Header Background Fill Color (#C9DAF8)
+            spreadsheetStream += `   <Row ss:StyleID="SubHeader"><Cell><Data ss:Type="String">ALLOTTEES' NAMES - SAIRAM</Data></Cell></Row>\n`;
+            
+            // Apply Main Table Column Header Background Fill Color (#FF0000)
             spreadsheetStream += `   <Row ss:StyleID="TableHeaders">\n`;
             spreadsheetStream += `    <Cell><Data ss:Type="String">#</Data></Cell>\n`;
             spreadsheetStream += `    <Cell><Data ss:Type="String">OFFERINGS</Data></Cell>\n`;
@@ -140,7 +143,6 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
                 spreadsheetStream += `    <Cell><Data ss:Type="String">${d}</Data></Cell>\n`;
             });
             spreadsheetStream += `   </Row>\n`;
-
             BHAJAN_OFFERINGS_MASTER.forEach((offering, index) => {
                 let styleId = "MandatoryTop";
                 if (offering.type === "S_MID") styleId = "SemiMandatory";
@@ -151,14 +153,16 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
                 spreadsheetStream += `    <Cell><Data ss:Type="String">${offering.name}</Data></Cell>\n`;
                 
                 sessionDatesColumns.forEach(() => {
-                    let assignedMember = groupRotationQueue[queuePointer];
+                    let assignedMember = groupRotationQueue.length > 0 ? groupRotationQueue[queuePointer] : null;
                     let devoteeName = assignedMember ? assignedMember.NAME : "Unassigned";
                     spreadsheetStream += `    <Cell><Data ss:Type="String">${devoteeName}</Data></Cell>\n`;
                     
                     if (assignedMember && groupSlotAuditMap[assignedMember.ID]) {
                         groupSlotAuditMap[assignedMember.ID].slotsCount += 1;
                     }
-                    queuePointer = (queuePointer + 1) % groupRotationQueue.length;
+                    if (groupRotationQueue.length > 0) {
+                        queuePointer = (queuePointer + 1) % groupRotationQueue.length;
+                    }
                 });
                 spreadsheetStream += `   </Row>\n`;
             });
@@ -166,7 +170,7 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
             spreadsheetStream += `   <Row></Row>\n`;
             spreadsheetStream += `   <Row><Cell ss:StyleID="BoldLabel"><Data ss:Type="String">*ALLOTMENT OF MANDATORY &amp; OTHER OFFERINGS FOR ${targetMonthString}*</Data></Cell></Row>\n`;
             spreadsheetStream += `   <Row><Cell><Data ss:Type="String">Sairam pl peruse the appended list and render the offerings as allotted.</Data></Cell></Row>\n`;
-            spreadsheetStream += `   <Row><Cell><Data ss:Type="String">*Kindly inform us immediately if you are not available for rendering the offerings allotted as above*</Data></Cell></Row>\n`;
+            spreadsheetStream += `   <Row><Cell><Data ss:Type="String">*Kindly inform us immediately if you are not available for rendering the offerings allotted as above for a slotting to another member*</Data></Cell></Row>\n`;
             spreadsheetStream += `   <Row><Cell><Data ss:Type="String">Om Sri Sairam 🙌</Data></Cell></Row>\n`;
             spreadsheetStream += `   <Row></Row>\n`;
 
