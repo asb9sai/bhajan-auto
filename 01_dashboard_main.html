@@ -121,9 +121,13 @@
     <!-- Injecting SheetJS workbook compiler tool first at the bottom line sequence -->
     <script src="https://jsdelivr.net"></script>
     
+        <!-- Injecting the certified native JavaScript database master file first -->
+    <script src="./00_members_database.js"></script>
+
     <!-- Injecting backend operational control scripts sequentially -->
     <script src="./BackEnd_Codes/03_database_core.js"></script>
     <script src="./BackEnd_Codes/04_scheduler_rules.js"></script>
     <script src="./BackEnd_Codes/05_monthly_allotment_engine.js"></script>
 </body>
 </html>
+
