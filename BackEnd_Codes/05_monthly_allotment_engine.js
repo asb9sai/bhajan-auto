@@ -4,9 +4,9 @@
  * SCRIPT NAME   : 05_monthly_allotment_engine.js (PART 1 OF 2)
  * PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\BackEnd_Codes\
  * PURPOSE       : Processes automated round-robin devotee assignments for 
- *                 Mandatory & Semi-Mandatory offerings. Generates a single
- *                 multi-worksheet Excel workbook (.xlsx) with slot tracking audits.
- * PLATFORMS     : 100% JavaScript. Native execution on Laptop and Mobile browsers.
+ *                 Mandatory & Semi-Mandatory offerings. Generates a multi-worksheet
+ *                 Excel-compatible layout natively without external network libraries.
+ * PLATFORMS     : 100% Self-Contained Native JavaScript for Laptop and Mobile.
  * ============================================================================
  */
 
@@ -27,10 +27,6 @@ const LOCAL_MEMBER_MASTER_DATA = [
 let VALUE_CURRENT_MONTH_STR = "";
 let VALUE_NEXT_MONTH_STR = "";
 
-/**
- * Initializes the text workspace. Shifts calculations forward by 1 month 
- * to display coming month and next month targets cleanly.
- */
 function renderMonthlyAllotmentInterface() {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     const controlPanelBar = document.getElementById('allotmentControlPanel');
@@ -47,12 +43,12 @@ function renderMonthlyAllotmentInterface() {
     document.getElementById('allotCurrentBtn').innerText = VALUE_CURRENT_MONTH_STR;
     document.getElementById('allotNextBtn').innerText = VALUE_NEXT_MONTH_STR;
 
-    let baselineText = `Sairam. Monthly Allotment Module Active (Multi-Worksheet Excel Mode).\n\n`;
+    let baselineText = `Sairam. Monthly Allotment Module Active (Native Spreadsheet Matrix Enabled).\n\n`;
     baselineText += `Please click one of the active calculation target buttons appearing at the bottom of the interface:\n`;
-    baselineText += `1. Click [ ${VALUE_CURRENT_MONTH_STR} ] to generate multi-tab Excel files natively.\n`;
+    baselineText += `1. Click [ ${VALUE_CURRENT_MONTH_STR} ] to generate horizontal allotment tables natively.\n`;
     baselineText += `2. Click [ ${VALUE_NEXT_MONTH_STR} ] to run assignments for the next month.\n\n`;
     baselineText += `-----------------------------------------------------------------------------------------\n`;
-    baselineText += `System Status: JavaScript compilation engine ready. Multi-worksheet arrays active.`;
+    baselineText += `System Status: 100% Self-Contained mode active. External network dependencies removed.`;
     
     displayWorkspace.value = baselineText;
     controlPanelBar.style.display = "flex";
@@ -61,9 +57,6 @@ function renderMonthlyAllotmentInterface() {
     if(bannerText) bannerText.innerText = "MONTHLY ALLOTMENT WORKSPACE INITIALIZED - CHOOSE MONTH BUTTON BELOW";
 }
 
-/**
- * Dynamically determines session dates based on targeted month calendar rules.
- */
 function getTargetSessionDatesForMonth(groupCode, targetMonthString) {
     const sessionDates = [];
     const [monthName, yearStr] = targetMonthString.split(" ");
@@ -80,22 +73,29 @@ function getTargetSessionDatesForMonth(groupCode, targetMonthString) {
             }
         }
     } else {
-        sessionDates.push("19-09-2026, SAT");
-        sessionDates.push("26-09-2026, SAT");
+        sessionDates.push(`12-${String(monthNum+1).padStart(2,'0')}-${yearNum}, MON`);
+        sessionDates.push(`26-${String(monthNum+1).padStart(2,'0')}-${yearNum}, TUE`);
     }
     return sessionDates;
 }
 /**
- * Native JavaScript Compilation Engine creating multi-tab spreadsheets on-the-fly.
- * Appends audit metrics table capturing slot count values covering all active records.
+ * Compiles horizontal matrix layouts and active devotee slot counts using 
+ * native spreadsheet streams, completely clearing library conflicts.
  */
 async function executeMonthlyAllotmentProcess(targetMonthString) {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
-    displayWorkspace.value = `Sairam. Mapping native membership definition rows across separate worksheet parameters...\n`;
+    displayWorkspace.value = `Sairam. Accessing native data sheets and processing round-robin allocations...\n`;
 
-    const liveWorkbook = XLSX.utils.book_new();
     const activeDevoteeList = LOCAL_MEMBER_MASTER_DATA.filter(member => member.STS === "Y");
     const targetGroups = ["WED", "FRI", "ARD", "MAH", "SPL"];
+
+    // Initialize an Excel-readable XML workbook data stream
+    let spreadsheetStream = '<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>\n' +
+        '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"\n' +
+        ' xmlns:o="urn:schemas-microsoft-com:office:office"\n' +
+        ' xmlns:x="urn:schemas-microsoft-com:office:excel"\n' +
+        ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n' +
+        ' <Styles><Style ss:ID="BoldText"><Font ss:Bold="1"/></Style></Styles>\n';
 
     targetGroups.forEach(groupCode => {
         const groupDevotees = activeDevoteeList.filter(m => m[groupCode] === "Y");
@@ -110,66 +110,102 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
             groupSlotAuditMap[m.ID] = { name: m.NAME, slotsCount: 0 };
         });
 
-        const sheetRowsArray = [];
-        sheetRowsArray.push([`(AS ${groupCode} BHAJAN GROUP) - MONTHLY ALLOTMENT OF OFFERINGS STATEMENT FOR ${targetMonthString}`]);
-        sheetRowsArray.push(["ALLOTTEES' NAMES - SAIRAM"]);
+        // Open a separate Worksheet tab for each individual group
+        spreadsheetStream += ` <Worksheet ss:Name="AS_${groupCode}_GROUP">\n  <Table>\n`;
         
-        let headerRow = ["#", "OFFERINGS"];
-        sessionDatesColumns.forEach(d => headerRow.push(`DATE & DAY (${d})`));
-        sheetRowsArray.push(headerRow);
+        // 1. Group Banner Rows
+        spreadsheetStream += `   <Row><Cell ss:StyleID="BoldText"><Data ss:Type="String">(AS ${groupCode} BHAJAN GROUP) - MONTHLY ALLOTMENT FOR ${targetMonthString}</Data></Cell></Row>\n`;
+        spreadsheetStream += `   <Row><Cell ss:StyleID="BoldText"><Data ss:Type="String">ALLOTTEES Names - SAIRAM</Data></Cell></Row>\n`;
+        spreadsheetStream += `   <Row>\n`;
+        
+        // 2. Main Matrix Column Headers
+        spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">#</Data></Cell>\n`;
+        spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">OFFERINGS</Data></Cell>\n`;
+        sessionDatesColumns.forEach(d => {
+            spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">DATE &amp; DAY (${d})</Data></Cell>\n`;
+        });
+        spreadsheetStream += `   </Row>\n`;
 
+        // 3. Populate Offerings Matrix Rows horizontally
         BHAJAN_OFFERINGS_MASTER.forEach((offeringName, index) => {
-            let rowData = [index + 1, offeringName];
+            spreadsheetStream += `   <Row>\n`;
+            spreadsheetStream += `    <Cell><Data ss:Type="Number">${index + 1}</Data></Cell>\n`;
+            spreadsheetStream += `    <Cell><Data ss:Type="String">${offeringName}</Data></Cell>\n`;
             
             sessionDatesColumns.forEach(() => {
                 let assignedMember = groupRotationQueue[queuePointer];
-                rowData.push(assignedMember ? assignedMember.NAME : "Unassigned");
+                let devoteeName = assignedMember ? assignedMember.NAME : "Unassigned";
+                spreadsheetStream += `    <Cell><Data ss:Type="String">${devoteeName}</Data></Cell>\n`;
                 
                 if (assignedMember && groupSlotAuditMap[assignedMember.ID]) {
                     groupSlotAuditMap[assignedMember.ID].slotsCount += 1;
                 }
                 queuePointer = (queuePointer + 1) % groupRotationQueue.length;
             });
-            sheetRowsArray.push(rowData);
+            spreadsheetStream += `   </Row>\n`;
         });
 
-        sheetRowsArray.push([]);
-        sheetRowsArray.push([`*ALLOTMENT OF MANDATORY & OTHER OFFERINGS FOR ${targetMonthString}*`]);
-        sheetRowsArray.push(["Sairam pl peruse the appended list and render the offerings as allotted."]);
-        sheetRowsArray.push(["*Kindly inform us immediately if you are not available for rendering the offerings allotted as above*"]);
-        sheetRowsArray.push(["Om Sri Sairam 🙌"]);
-        sheetRowsArray.push([]);
+        // 4. Blueprint Disclaimer Rows
+        spreadsheetStream += `   <Row></Row>\n`;
+        spreadsheetStream += `   <Row><Cell ss:StyleID="BoldText"><Data ss:Type="String">*ALLOTMENT OF MANDATORY &amp; OTHER OFFERINGS FOR ${targetMonthString}*</Data></Cell></Row>\n`;
+        spreadsheetStream += `   <Row><Cell><Data ss:Type="String">Sairam pl peruse the appended list and render the offerings as allotted.</Data></Cell></Row>\n`;
+        spreadsheetStream += `   <Row><Cell><Data ss:Type="String">*Kindly inform us immediately if you are not available for rendering the offerings allotted as above*</Data></Cell></Row>\n`;
+        spreadsheetStream += `   <Row><Cell><Data ss:Type="String">Om Sri Sairam 🙌</Data></Cell></Row>\n`;
+        spreadsheetStream += `   <Row></Row>\n`;
 
-        sheetRowsArray.push(["MEMBER ID", "MEMBER NAME", "TOTAL SLOTS ALLOTTED"]);
+        // 5. Audit Summary Header
+        spreadsheetStream += `   <Row>\n`;
+        spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">MEMBER ID</Data></Cell>\n`;
+        spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">MEMBER NAME</Data></Cell>\n`;
+        spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">TOTAL SLOTS ALLOTTED</Data></Cell>\n`;
+        spreadsheetStream += `   </Row>\n`;
+
+        // 6. Append Slot Counts covering all active members
         Object.keys(groupSlotAuditMap).forEach(memberId => {
             const auditInfo = groupSlotAuditMap[memberId];
-            sheetRowsArray.push([parseInt(memberId), auditInfo.name, auditInfo.slotsCount]);
+            spreadsheetStream += `   <Row>\n`;
+            spreadsheetStream += `    <Cell><Data ss:Type="Number">${memberId}</Data></Cell>\n`;
+            spreadsheetStream += `    <Cell><Data ss:Type="String">${auditInfo.name}</Data></Cell>\n`;
+            spreadsheetStream += `    <Cell><Data ss:Type="Number">${auditInfo.slotsCount}</Data></Cell>\n`;
+            spreadsheetStream += `   </Row>\n`;
         });
 
-        const liveWorksheet = XLSX.utils.aoa_to_sheet(sheetRowsArray);
-        XLSX.utils.book_append_sheet(liveWorkbook, liveWorksheet, `AS_${groupCode}_GROUP`);
+        spreadsheetStream += `  </Table>\n </Worksheet>\n`;
     });
 
-    try {
-        const targetOutputName = `MULTI_TAB_ALLOTMENT_${targetMonthString.replace(/ /g, "_")}.xlsx`;
-        XLSX.writeFile(liveWorkbook, targetOutputName);
+    spreadsheetStream += '</Workbook>\n';
 
-        let successMessage = `Sairam! True Multi-Worksheet Excel Workbook compiled natively for [${targetMonthString}].\n\n`;
-        successMessage += `✓ INDIVIDUAL WORKSHEETS CREATED: WED, FRI, ARD, MAH, SPL tabs appended cleanly.\n`;
-        successMessage += `✓ SLOT TRACKING AUDIT GENERATED: Summary table tracking slots compiled for all active members.\n\n`;
-        successMessage += `📁 EXCEL WORKBOOK FILE DOWNLOADED:\n`;
+    // Native Local browser Download Trigger pushing true multi-worksheet file streams
+    try {
+        const targetOutputName = `MULTI_TAB_ALLOTMENT_${targetMonthString.replace(/ /g, "_")}.xls`;
+        const dataBlobElement = new Blob([spreadsheetStream], { type: 'application/vnd.ms-excel' });
+        const temporaryLinkAnchor = document.createElement("a");
+        
+        const ObjectUrlReference = URL.createObjectURL(dataBlobElement);
+        temporaryLinkAnchor.setAttribute("href", ObjectUrlReference);
+        temporaryLinkAnchor.setAttribute("download", targetOutputName);
+        temporaryLinkAnchor.style.visibility = 'hidden';
+        
+        document.body.appendChild(temporaryLinkAnchor);
+        temporaryLinkAnchor.click();
+        document.body.removeChild(temporaryLinkAnchor);
+
+        let successMessage = `Sairam! Native Horizontal Excel Allotment Workbook compiled perfectly for [${targetMonthString}].\n\n`;
+        successMessage += `✓ SEPARATE WORKSHEETS CREATED: WED, FRI, ARD, MAH, SPL tabs generated natively.\n`;
+        successMessage += `✓ SLOT TRACKING AUDIT GENERATED: Total allotments table appended cleanly covering all active members.\n\n`;
+        successMessage += `📁 EXCEL WORKBOOK FILE DOWNLOADED SUCCESSFULLY:\n`;
         successMessage += `Filename: ${targetOutputName}\n\n`;
-        successMessage += `Please check your local downloads folder, and move this file directly to your target directory path at:\n`;
+        successMessage += `Please check your downloads folder, and move this file directly to your path at:\n`;
         successMessage += `D:\\COMMON PYTHON\\HTMLBJNAUTO\\OUTPUTS\\`;
 
         displayWorkspace.value = successMessage;
 
         const bannerText = document.getElementById('contextBannerText');
-        if(bannerText) bannerText.innerText = `MULTI-TAB WORKBOOK COMPILED FOR ${targetMonthString}`;
+        if(bannerText) bannerText.innerText = `NATIVE WORKBOOK COMPILED FOR ${targetMonthString}`;
 
     } catch (excelError) {
         console.error(excelError);
-        displayWorkspace.value += `\n❌ Compilation Interrupted Natively: ${excelError.message}`;
+        displayWorkspace.value += `\n❌ Native Compilation Interrupted: ${excelError.message}`;
     }
 }
 
