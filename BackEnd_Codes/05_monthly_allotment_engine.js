@@ -6,6 +6,7 @@
  * PURPOSE       : Processes automated round-robin devotee assignments for 
  *                 Mandatory & Semi-Mandatory offerings across all AS groups.
  *                 Displays coming month and next month targets dynamically.
+ *                 Directly targets public repository data paths for zero-errors.
  * PLATFORMS     : Unified execution layer for Laptop and Mobile environments.
  * ============================================================================
  */
@@ -30,10 +31,6 @@ const BHAJAN_OFFERINGS_MASTER = [
 let VALUE_CURRENT_MONTH_STR = "";
 let VALUE_NEXT_MONTH_STR = "";
 
-/**
- * Initializes the text workspace. Shifts calculations forward by 1 month 
- * to display coming month and next month targets cleanly.
- */
 function renderMonthlyAllotmentInterface() {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     const controlPanelBar = document.getElementById('allotmentControlPanel');
@@ -41,15 +38,12 @@ function renderMonthlyAllotmentInterface() {
 
     const baseCalendarDate = new Date();
 
-    // Look ahead 1 month for the coming month target (September 2026)
     const dComingMonth = new Date(baseCalendarDate.getFullYear(), baseCalendarDate.getMonth() + 1, 1);
     VALUE_CURRENT_MONTH_STR = `${dComingMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dComingMonth.getFullYear()}`;
 
-    // Look ahead 2 months for the next month target (October 2026)
     const dNextMonth = new Date(baseCalendarDate.getFullYear(), baseCalendarDate.getMonth() + 2, 1);
     VALUE_NEXT_MONTH_STR = `${dNextMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dNextMonth.getFullYear()}`;
 
-    // Apply the text labels to the button elements
     document.getElementById('allotCurrentBtn').innerText = VALUE_CURRENT_MONTH_STR;
     document.getElementById('allotNextBtn').innerText = VALUE_NEXT_MONTH_STR;
 
@@ -74,38 +68,36 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     displayWorkspace.value = `Sairam. Connecting to secure serverless vault to extract Master profiles...\n`;
 
-    // CORRECTED: Call the precise tokenless function name matching 03_database_core.js
-    const databaseResult = await fetchMemberMasterFromVault();
-    if (!databaseResult || !databaseResult.members) {
-        displayWorkspace.value += `❌ Critical Error: Unable to read serverless records. Please verify your file setup inside GitHub.`;
-        return;
-    }
-
-    const activeDevoteeList = databaseResult.members.filter(member => member.STS === "Y");
-    displayWorkspace.value += `✓ Loaded ${activeDevoteeList.length} active devotees cleanly from repository structure.\n`;
-    displayWorkspace.value += `Executing round-robin balancing allocations across active group channels...\n`;
-
-    let CSVContentStream = "GROUP,OFFERING ID,OFFERING NAME,ASSIGNED DEVOTEE ID,ASSIGNED DEVOTEE NAME\r\n";
-    const targetGroups = ["WED", "FRI", "ARD", "MAH", "SPL"];
-    
-    targetGroups.forEach(groupCode => {
-        const groupDevotees = activeDevoteeList.filter(m => m[groupCode] === "Y");
-        if (groupDevotees.length === 0) return;
-
-        let rotationQueue = [...groupDevotees].sort(() => Math.random() - 0.5);
-        let queueIndexPointer = 0;
-
-        BHAJAN_OFFERINGS_MASTER.forEach(offering => {
-            let assignedMember = rotationQueue[queueIndexPointer];
-            const memberId = assignedMember ? assignedMember.ID : "N/A";
-            const memberName = assignedMember ? assignedMember.NAME.replace(/"/g, '""') : "Unassigned";
-            
-            CSVContentStream += `${groupCode},${offering.id},"${offering.name}",${memberId},"${memberName}"\r\n`;
-            queueIndexPointer = (queueIndexPointer + 1) % rotationQueue.length;
-        });
-    });
-
+    // Direct public web path fetch query bypasses any folder casing mismatch bugs
     try {
+        const publicDataResponse = await fetch('https://githubusercontent.com', { cache: 'no-store' });
+        if (!publicDataResponse.ok) throw new Error("File not found on repository page");
+        const membersDataArray = await publicDataResponse.json();
+        
+        const activeDevoteeList = membersDataArray.filter(member => member.STS === "Y");
+        displayWorkspace.value += `✓ Loaded ${activeDevoteeList.length} active devotees cleanly from repository structure.\n`;
+        displayWorkspace.value += `Executing round-robin balancing allocations across active group channels...\n`;
+
+        let CSVContentStream = "GROUP,OFFERING ID,OFFERING NAME,ASSIGNED DEVOTEE ID,ASSIGNED DEVOTEE NAME\r\n";
+        const targetGroups = ["WED", "FRI", "ARD", "MAH", "SPL"];
+        
+        targetGroups.forEach(groupCode => {
+            const groupDevotees = activeDevoteeList.filter(m => m[groupCode] === "Y");
+            if (groupDevotees.length === 0) return;
+
+            let rotationQueue = [...groupDevotees].sort(() => Math.random() - 0.5);
+            let queueIndexPointer = 0;
+
+            BHAJAN_OFFERINGS_MASTER.forEach(offering => {
+                let assignedMember = rotationQueue[queueIndexPointer];
+                const memberId = assignedMember ? assignedMember.ID : "N/A";
+                const memberName = assignedMember ? assignedMember.NAME.replace(/"/g, '""') : "Unassigned";
+                
+                CSVContentStream += `${groupCode},${offering.id},"${offering.name}",${memberId},"${memberName}"\r\n`;
+                queueIndexPointer = (queueIndexPointer + 1) % rotationQueue.length;
+            });
+        });
+
         const dataBlobElement = new Blob([CSVContentStream], { type: 'text/csv;charset=utf-8;' });
         const temporaryLinkAnchor = document.createElement("a");
         const formattedFileName = `MONTHLY_ALLOTMENT_${targetMonthString.replace(/ /g, "_")}.csv`;
@@ -133,8 +125,8 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         if(bannerText) bannerText.innerText = `MONTHLY ALLOTMENT COMPLETE FOR ${targetMonthString} - FILE DOWNLOADED`;
 
     } catch (fileError) {
-        console.error("File write exception:", fileError);
-        displayWorkspace.value += `\n❌ File Stream Pushing Interrupted: ${fileError.message}`;
+        displayWorkspace.value += `\n❌ Critical Error: Unable to read serverless records. File ASMbrMstr.json layout check required.`;
+        console.error(fileError);
     }
 }
 
