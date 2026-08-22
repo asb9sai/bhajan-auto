@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+     ============================================================================
+     SCRIPT NO     : 01
+     SCRIPT NAME   : 01_dashboard_main.html
+     PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\
+     PURPOSE       : Main frontend control dashboard with precise color accents, 
+                     side-by-side date dropdown fields, and an immediate bottom 
+                     allotment selection control bar.
+     PLATFORMS     : Fully responsive layout for Windows 11 Laptop & Android 11.
+     ============================================================================
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athma Sai Bhajan Groups - Admin System</title>
+    <link rel="stylesheet" href="./BackEnd_Codes/02_dashboard_styles.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Topmost Heading Box -->
+        <header class="main-header">
+            <h1>ATHMA SAI BHAJAN GROUPS - ADMIN PART MANAGEMENT SYSTEM</h1>
+            <nav class="top-nav">
+                <button class="nav-btn month-allot-btn">MONTHLY ALLOTMENT</button>
+                <button class="nav-btn mbr-mstr-btn">MEMBER MASTER</button>
+                <button class="nav-btn pres-btn">PRESENTATION & SAI WHEEL</button>
+            </nav>
+        </header>
+
+        <!-- Main Groups & Parallel Date Layout Grid -->
+        <section class="groups-master-zone">
+            <h3 class="section-banner">GROUPS</h3>
+            <div class="groups-matrix-wrapper">
+                
+                <!-- WED Group Column -->
+                <div class="group-column-cell">
+                    <button class="group-btn" data-group="WED">WED</button>
+                    <div class="dropdown-wrapper">
+                        <select class="date-dropdown" id="dropdown_WED"></select>
+                    </div>
+                </div>
+
+                <!-- FRI Group Column -->
+                <div class="group-column-cell">
+                    <button class="group-btn" data-group="FRI">FRI</button>
+                    <div class="dropdown-wrapper">
+                        <select class="date-dropdown" id="dropdown_FRI"></select>
+                    </div>
+                </div>
+
+                <!-- ARD Group Column -->
+                <div class="group-column-cell">
+                    <button class="group-btn" data-group="ARD">ARD</button>
+                    <div class="dropdown-wrapper">
+                        <select class="date-dropdown" id="dropdown_ARD"></select>
+                    </div>
+                </div>
+
+                <!-- MAH Group Column -->
+                <div class="group-column-cell">
+                    <button class="group-btn" data-group="MAH">MAH</button>
+                    <div class="dropdown-wrapper">
+                        <select class="date-dropdown" id="dropdown_MAH"></select>
+                    </div>
+                </div>
+
+                <!-- SPL Group Column -->
+                <div class="group-column-cell">
+                    <button class="group-btn" data-group="SPL">SPL</button>
+                    <div class="dropdown-wrapper">
+                        <select class="date-dropdown" id="dropdown_SPL"></select>
+                    </div>
+                </div>
+
+                <!-- PRM Group Column -->
+                <div class="group-column-cell">
+                    <button class="group-btn prm-btn" data-group="PRM">PRM</button>
+                    <div class="dropdown-wrapper empty-prm-space"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Process Operational Grid Matrix -->
+        <section class="process-action-zone">
+            <h3 class="section-banner">GROUPS' PROCESSESS</h3>
+            <div class="process-btn-grid">
+                <button class="process-btn" data-process="satsang">SATSANG N <span class="arrow">▼</span><br><small>(Group Date)</small></button>
+                <button class="process-btn" data-process="allotment">WEEKLY ALLOTMENT <span class="arrow">▼</span><br><small>(Group Date)</small></button>
+                <button class="process-btn" data-process="checklist">CHECK LIST<br><small>(Group Date)</small></button>
+                <button class="process-btn" data-process="lyrics">PASTE LYRICS<br><small>(Group Date)</small></button>
+                <button class="process-btn" data-process="reminder">REMINDER<br><small>(Group Date)</small></button>
+                <button class="process-btn" data-process="slot">SLOT AVLBL<br><small>(Group Date)</small></button>
+                <button class="process-btn" data-process="final">FINAL LIST<br><small>(Group Date)</small></button>
+            </div>
+        </section>
+
+        <!-- Clipboard Output Display Block -->
+        <section class="clipboard-display-zone">
+            <div class="description-bar">
+                <div class="desc-label">DESCRIPTION</div>
+                <div class="desc-value" id="contextBannerText">Here the selected Group, Date and Button Process to be displayed</div>
+            </div>
+            <div class="textarea-wrapper">
+                <textarea id="whatsappClipboardArea" readonly placeholder="This is the clipboard area to display outputs created by the following buttons : WEEKLY ALLOTMENT, CHECKLIST, REMINDER, SLOT AVAILABLE & FINAL LIST. The outputs so displayed here will be copied and pasted to the concerned Group in WhatsApp."></textarea>
+                <button class="copy-action-btn" id="copyTextBtn">COPY</button>
+            </div>
+            
+            <!-- NEW: Dedicated, Un-hardcoded Bottom Choice Selection Bar -->
+            <div id="allotmentControlPanel" class="allotment-action-bar" style="display: none;">
+                <span class="allot-prompt">RUN CALCULATIONS FOR:</span>
+                <button class="allot-run-btn" id="allotCurrentBtn">CURRENT MONTH</button>
+                <button class="allot-run-btn" id="allotNextBtn">NEXT MONTH</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Injecting backend operational control scripts sequentially at the absolute bottom -->
+    <script src="./BackEnd_Codes/03_database_core.js"></script>
+    <script src="./BackEnd_Codes/04_scheduler_rules.js"></script>
+    <script src="./BackEnd_Codes/05_monthly_allotment_engine.js"></script>
+</body>
+</html>
