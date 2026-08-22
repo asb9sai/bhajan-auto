@@ -95,7 +95,7 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         if (!publicDataResponse.ok) throw new Error("Database file read error. Verify ASMbrMstr.json path location.");
         const membersDataArray = await publicDataResponse.json();
         
-        const activeDevoteeList = membersDataArray.filter(member => member.STS === "Y" || member.STS === "y");
+        const activeDevoteeList = membersDataArray.filter(member => member.STS === "A" || member.STS === "a");
         displayWorkspace.value += `✓ Successfully loaded ${activeDevoteeList.length} active devotees from raw storage!\n`;
         displayWorkspace.value += `Executing round-robin balancing allocations and writing visual style rules...\n`;
 
