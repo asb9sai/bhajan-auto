@@ -3,71 +3,21 @@
  * SCRIPT NO     : 03
  * SCRIPT NAME   : 03_database_core.js
  * PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\BackEnd_Codes\
- * PURPOSE       : Establishes secure serverless operations over GitHub, and
- *                 manages interactive active/inactive states of process buttons.
- *                 Enforces absolute startup grey-out lockouts across buttons.
+ * PURPOSE       : Manages interactive active/inactive states of the 7 group
+ *                 process buttons exclusively. Isolated from allotment workflows.
  * PLATFORMS     : Unified execution layer for Laptop and Mobile environments.
  * ============================================================================
  */
 
-const GITHUB_DATABASE_CONFIG = {
-    owner: 'asb9sai',                         
-    repo: 'bhajan-auto',                      
-    path: 'ASMbrMstr.json',                   
-    token: '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' 
-};
-
-// Global administrative selection tracking tokens
-let SELECTED_GROUP_CODE = null;
-let SELECTED_PROCESS_NAME = null;
+let DASHBOARD_ACTIVE_GROUP_CODE = null;
+let DASHBOARD_ACTIVE_PROCESS_NAME = null;
 
 /**
- * UNIQUE CONTROLLER READ PATH
+ * Isolated State Controller: Explicitly targets and manages the 7 process buttons.
+ * Keeps them frozen in a safe, unclickable muted grey layout mode.
  */
-async function loadMainMemberDatabaseFile() {
-    const rawDataStorageUrl = `https://githubusercontent.com{GITHUB_DATABASE_CONFIG.owner}/${GITHUB_DATABASE_CONFIG.repo}/main/${GITHUB_DATABASE_CONFIG.path}`;
-    try {
-        const networkResponse = await fetch(rawDataStorageUrl, { cache: 'no-store' });
-        if (!networkResponse.ok) throw new Error(`HTTP Status: ${networkResponse.status}`);
-        const membersDataArray = await networkResponse.json();
-        return { members: membersDataArray };
-    } catch (databaseError) {
-        console.error("[03_database_core.js] Fetch Error:", databaseError);
-        return null;
-    }
-}
-
-async function saveMemberMasterToVault(updatedMembersArray, currentSha) {
-    const targetUrl = `https://github.com{GITHUB_DATABASE_CONFIG.owner}/${GITHUB_DATABASE_CONFIG.repo}/contents/${GITHUB_DATABASE_CONFIG.path}`;
-    try {
-        const JSONStringData = JSON.stringify(updatedMembersArray, null, 2);
-        const encodedContentBase64 = btoa(unescape(encodeURIComponent(JSONStringData)));
-        const networkResponse = await fetch(targetUrl, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${GITHUB_DATABASE_CONFIG.token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/vnd.github.v3+json'
-            },
-            body: JSON.stringify({
-                message: "Admin Automation System: Commit Sequence Update [03_database_core]",
-                content: encodedContentBase64,
-                sha: currentSha
-            })
-        });
-        return networkResponse.ok;
-    } catch (databaseError) {
-        console.error("[03_database_core.js] Write Exception:", databaseError);
-        return false;
-    }
-}
-
-/**
- * State Controller Function: Manages active/inactive behavior of process buttons.
- */
-function toggleProcessButtonsState(shouldEnable) {
+function enforceProcessButtonsLock(shouldEnable) {
     const processButtons = document.querySelectorAll('.process-btn');
-    
     processButtons.forEach(btn => {
         if (shouldEnable) {
             btn.disabled = false;
@@ -83,95 +33,76 @@ function toggleProcessButtonsState(shouldEnable) {
     });
 }
 
-/**
- * Formats and renders the dynamic confirmation running text string into your DESCRIPTION box.
- */
-function updateDashboardContextBanner() {
-    const valueDisplayContainer = document.getElementById('contextBannerText');
-    if (!valueDisplayContainer) return;
+function refreshContextBannerText() {
+    const bannerContainer = document.getElementById('contextBannerText');
+    if (!bannerContainer) return;
     
-    if (!SELECTED_GROUP_CODE) {
-        valueDisplayContainer.innerText = "Here the selected Group, Date and Button Process to be displayed";
+    if (!DASHBOARD_ACTIVE_GROUP_CODE) {
+        bannerContainer.innerText = "Here the selected Group, Date and Button Process to be displayed";
         return;
     }
 
-    let expansionTitleMap = { "WED": "WEDNESDAY", "FRI": "FRIDAY", "ARD": "ARDRA", "MAH": "MAHILAS", "SPL": "SPECIAL BHAJAN", "PRM": "PRM" };
-    const cleanGroupTitle = expansionTitleMap[SELECTED_GROUP_CODE] || SELECTED_GROUP_CODE;
+    const titleExpansionMap = { "WED": "WEDNESDAY", "FRI": "FRIDAY", "ARD": "ARDRA", "MAH": "MAHILAS", "SPL": "SPECIAL BHAJAN", "PRM": "PRM" };
+    const cleanGroupTitle = titleExpansionMap[DASHBOARD_ACTIVE_GROUP_CODE] || DASHBOARD_ACTIVE_GROUP_CODE;
     
-    const matchingDropdownElement = document.getElementById(`dropdown_${SELECTED_GROUP_CODE}`);
-    let activeDateString = (matchingDropdownElement && matchingDropdownElement.value) ? matchingDropdownElement.value : "CHOSEN DATE";
+    const targetDropdown = document.getElementById(`dropdown_${DASHBOARD_ACTIVE_GROUP_CODE}`);
+    let activeDateStr = (targetDropdown && targetDropdown.value) ? targetDropdown.value : "CHOSEN DATE";
 
-    if (SELECTED_PROCESS_NAME) {
-        valueDisplayContainer.innerText = `AS ${cleanGroupTitle} GROUP - ${activeDateString} - ${SELECTED_PROCESS_NAME} ARE BEING PROCESSED`;
+    if (DASHBOARD_ACTIVE_PROCESS_NAME) {
+        bannerContainer.innerText = `AS ${cleanGroupTitle} GROUP - ${activeDateStr} - ${DASHBOARD_ACTIVE_PROCESS_NAME} ARE BEING PROCESSED`;
     } else {
-        valueDisplayContainer.innerText = `AS ${cleanGroupTitle} GROUP - ${activeDateString} - SELECT A PROCESS BUTTON`;
+        bannerContainer.innerText = `AS ${cleanGroupTitle} GROUP - ${activeDateStr} - SELECT A PROCESS BUTTON`;
     }
 }
 
-// Binds interface listeners seamlessly on system boot sequence initialization
-function initializeDatabaseCoreBehaviors() {
-    // MANDATORY STARTUP SECURITY LOCK: Forces all process buttons to freeze into grey mode immediately on boot
-    toggleProcessButtonsState(false);
+// Initialize interface locks immediately on boot sequence
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Force immediate structural grey lockdown on startup
+    enforceProcessButtonsLock(false);
     
-    document.querySelectorAll('.group-btn').forEach(buttonElement => {
-        buttonElement.addEventListener('click', (eventObject) => {
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            
+    // 2. Bind click tracking exclusively to the primary group buttons
+    document.querySelectorAll('.group-btn').forEach(btnElement => {
+        btnElement.addEventListener('click', (e) => {
+            // Remove previous thick border focuses across all group blocks
             document.querySelectorAll('.group-btn').forEach(btn => {
                 btn.style.border = '';
                 btn.style.borderBottom = '2px solid #000';
             });
             
-            const clickedBtn = eventObject.currentTarget;
+            const clickedBtn = e.currentTarget;
             clickedBtn.style.border = '4px solid #000000';
             
-            SELECTED_GROUP_CODE = clickedBtn.getAttribute('data-group');
-            SELECTED_PROCESS_NAME = null; 
+            // Register target working parameters
+            DASHBOARD_ACTIVE_GROUP_CODE = clickedBtn.getAttribute('data-group');
+            DASHBOARD_ACTIVE_PROCESS_NAME = null; 
             
-            toggleProcessButtonsState(true);
-            updateDashboardContextBanner();
+            // Wake up the 7 processing elements row and make text bold black
+            enforceProcessButtonsLock(true);
+            refreshContextBannerText();
         });
     });
 
+    // 3. Monitor individual dropdown adjustments to rewrite selection strings live
     document.querySelectorAll('.date-dropdown').forEach(dropdownElement => {
-        dropdownElement.addEventListener('change', () => {
-            updateDashboardContextBanner();
-        });
+        dropdownElement.addEventListener('change', refreshContextBannerText);
     });
 
+    // 4. Track process action clicks to format final verification tracking string
     document.querySelectorAll('.process-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             let fullTextString = e.currentTarget.innerText;
             if (fullTextString.includes('\n')) {
-                SELECTED_PROCESS_NAME = fullTextString.split('\n').trim();
-            } else if (fullTextString.includes('▼')) {
-                SELECTED_PROCESS_NAME = fullTextString.replace('▼', '').trim();
+                DASHBOARD_ACTIVE_PROCESS_NAME = fullTextString.split('\n')[0].trim();
             } else {
-                SELECTED_PROCESS_NAME = fullTextString.trim();
+                DASHBOARD_ACTIVE_PROCESS_NAME = fullTextString.replace('▼', '').trim();
             }
             
-            SELECTED_PROCESS_NAME = SELECTED_PROCESS_NAME.replace('▼', '').trim();
-            updateDashboardContextBanner();
+            refreshContextBannerText();
             
             const displayArea = document.getElementById('whatsappClipboardArea');
-            displayArea.value = `Sairam!\nRunning automation scripts for matching criteria keys...\n- Focus Target: AS ${SELECTED_GROUP_CODE} Group\n- Action Process: ${SELECTED_PROCESS_NAME}`;
+            if (displayArea) {
+                displayArea.value = `Sairam!\nRunning automation scripts for matching criteria keys...\n- Focus Target: AS ${DASHBOARD_ACTIVE_GROUP_CODE} Group\n- Action Process: ${DASHBOARD_ACTIVE_PROCESS_NAME}`;
+            }
         });
     });
-
-    const copyBtnElement = document.getElementById('copyTextBtn');
-    if (copyBtnElement) {
-        copyBtnElement.addEventListener('click', () => {
-            const txtArea = document.getElementById('whatsappClipboardArea');
-            txtArea.select();
-            txtArea.setSelectionRange(0, 99999); 
-            navigator.clipboard.writeText(txtArea.value);
-        });
-    }
-}
-
-// Attach listeners cleanly whether document is loading or already fully initialized by the custom engine loader
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeDatabaseCoreBehaviors);
-} else {
-    initializeDatabaseCoreBehaviors();
-}
+});
