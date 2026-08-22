@@ -5,7 +5,7 @@
  * PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\BackEnd_Codes\
  * PURPOSE       : Establishes secure serverless operations over GitHub, and
  *                 manages interactive active/inactive states of process buttons.
- *                 Reads data seamlessly using public repository fetching pathways.
+ *                 Enforces absolute startup grey-out lockouts across buttons.
  * PLATFORMS     : Unified execution layer for Laptop and Mobile environments.
  * ============================================================================
  */
@@ -14,7 +14,7 @@ const GITHUB_DATABASE_CONFIG = {
     owner: 'asb9sai',                         
     repo: 'bhajan-auto',                      
     path: 'ASMbrMstr.json',                   
-    token: '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' // Preserved for secure write updates
+    token: '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' 
 };
 
 // Global administrative selection tracking tokens
@@ -22,33 +22,17 @@ let SELECTED_GROUP_CODE = null;
 let SELECTED_PROCESS_NAME = null;
 
 /**
- * 1. READ OPERATION (UPDATED)
- * Fetches the member master records directly from the public GitHub Pages URL.
- * This completely bypasses token blocks and resolves local browser network restrictions.
+ * UNIQUE CONTROLLER READ PATH
  */
-async function fetchMemberMasterFromVault() {
-    // Direct public web path to your data file
-    const publicDataUrl = `https://githubusercontent.com{GITHUB_DATABASE_CONFIG.owner}/${GITHUB_DATABASE_CONFIG.repo}/main/${GITHUB_DATABASE_CONFIG.path}`;
-    
+async function loadMainMemberDatabaseFile() {
+    const rawDataStorageUrl = `https://githubusercontent.com{GITHUB_DATABASE_CONFIG.owner}/${GITHUB_DATABASE_CONFIG.repo}/main/${GITHUB_DATABASE_CONFIG.path}`;
     try {
-        const networkResponse = await fetch(publicDataUrl, {
-            method: 'GET',
-            cache: 'no-store' // Enforces loading the absolute freshest records every time
-        });
-
-        if (!networkResponse.ok) {
-            throw new Error(`Public fetch failed with HTTP status: ${networkResponse.status}`);
-        }
-
-        const membersArray = await networkResponse.json();
-        
-        // Return structured format matching expected application logic fields
-        return { 
-            members: membersArray, 
-            sha: null // SHA is not required for open public read operations
-        };
+        const networkResponse = await fetch(rawDataStorageUrl, { cache: 'no-store' });
+        if (!networkResponse.ok) throw new Error(`HTTP Status: ${networkResponse.status}`);
+        const membersDataArray = await networkResponse.json();
+        return { members: membersDataArray };
     } catch (databaseError) {
-        console.error("[03_database_core.js] Open Read Exception:", databaseError);
+        console.error("[03_database_core.js] Fetch Error:", databaseError);
         return null;
     }
 }
@@ -125,7 +109,8 @@ function updateDashboardContextBanner() {
 }
 
 // Binds interface listeners seamlessly on system boot sequence initialization
-document.addEventListener('DOMContentLoaded', () => {
+function initializeDatabaseCoreBehaviors() {
+    // MANDATORY STARTUP SECURITY LOCK: Forces all process buttons to freeze into grey mode immediately on boot
     toggleProcessButtonsState(false);
     
     document.querySelectorAll('.group-btn').forEach(buttonElement => {
@@ -158,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', (e) => {
             let fullTextString = e.currentTarget.innerText;
             if (fullTextString.includes('\n')) {
-                SELECTED_PROCESS_NAME = fullTextString.split('\n')[0].trim();
+                SELECTED_PROCESS_NAME = fullTextString.split('\n').trim();
             } else if (fullTextString.includes('▼')) {
                 SELECTED_PROCESS_NAME = fullTextString.replace('▼', '').trim();
             } else {
@@ -173,10 +158,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    document.getElementById('copyTextBtn').addEventListener('click', () => {
-        const txtArea = document.getElementById('whatsappClipboardArea');
-        txtArea.select();
-        txtArea.setSelectionRange(0, 99999); 
-        navigator.clipboard.writeText(txtArea.value);
-    });
-});
+    const copyBtnElement = document.getElementById('copyTextBtn');
+    if (copyBtnElement) {
+        copyBtnElement.addEventListener('click', () => {
+            const txtArea = document.getElementById('whatsappClipboardArea');
+            txtArea.select();
+            txtArea.setSelectionRange(0, 99999); 
+            navigator.clipboard.writeText(txtArea.value);
+        });
+    }
+}
+
+// Attach listeners cleanly whether document is loading or already fully initialized by the custom engine loader
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDatabaseCoreBehaviors);
+} else {
+    initializeDatabaseCoreBehaviors();
+}
