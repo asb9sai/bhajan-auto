@@ -41,11 +41,11 @@ function renderMonthlyAllotmentInterface() {
 
     const baseCalendarDate = new Date();
 
-    // Look ahead 1 month for the coming month target (September 2026) [01.5]
+    // Look ahead 1 month for the coming month target (September 2026)
     const dComingMonth = new Date(baseCalendarDate.getFullYear(), baseCalendarDate.getMonth() + 1, 1);
     VALUE_CURRENT_MONTH_STR = `${dComingMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dComingMonth.getFullYear()}`;
 
-    // Look ahead 2 months for the next month target (October 2026) [01.5]
+    // Look ahead 2 months for the next month target (October 2026)
     const dNextMonth = new Date(baseCalendarDate.getFullYear(), baseCalendarDate.getMonth() + 2, 1);
     VALUE_NEXT_MONTH_STR = `${dNextMonth.toLocaleString('en-US', { month: 'long' }).toUpperCase()} ${dNextMonth.getFullYear()}`;
 
@@ -74,10 +74,10 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     displayWorkspace.value = `Sairam. Connecting to secure serverless vault to extract Master profiles...\n`;
 
-    // Fetch live member records using our central database connection script
+    // CORRECTED: Call the precise tokenless function name matching 03_database_core.js
     const databaseResult = await fetchMemberMasterFromVault();
     if (!databaseResult || !databaseResult.members) {
-        displayWorkspace.value += `❌ Critical Error: Unable to read serverless records. Please verify your token inside 03_database_core.js.`;
+        displayWorkspace.value += `❌ Critical Error: Unable to read serverless records. Please verify your file setup inside GitHub.`;
         return;
     }
 
