@@ -1,7 +1,7 @@
 /**
  * ============================================================================
  * SCRIPT NO     : 05
- * SCRIPT NAME   : 05_monthly_allotment_engine.js (PART 1 OF 2)
+ * SCRIPT NAME   : 05_monthly_allotment_engine.js (PART 1 OF 3)
  * PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\BackEnd_Codes\
  * PURPOSE       : Processes automated round-robin devotee assignments for 
  *                 Mandatory & Semi-Mandatory offerings. Dynamically fetches 
@@ -82,19 +82,19 @@ function getTargetSessionDatesForMonth(groupCode, targetMonthString) {
 }
 /**
  * Dynamic Core Workbook Calculation Engine.
- * Connects over a tokenless route directly to your live ASMbrMstr.json database file.
+ * Pulls your member master dataset directly from GitHub raw files using a tokenless route.
  */
 async function executeMonthlyAllotmentProcess(targetMonthString) {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     displayWorkspace.value = `Sairam. Connecting dynamically to raw repository storage to pull active member records...\n`;
 
     try {
-        // INSTANT FETCH PATHWAY: Pulls your real data text directly from raw storage to bypass cache blocks
+        // INSTANT FETCH PATH: Pulls data directly from raw file storage to bypass deployment delays [01.5]
         const publicDataResponse = await fetch('https://githubusercontent.com', { cache: 'no-store' });
         if (!publicDataResponse.ok) throw new Error("Database file read error. Verify ASMbrMstr.json path location.");
         const membersDataArray = await publicDataResponse.json();
         
-        // RECALIBRATED FILTER: Enforces tracking active devotees utilizing your true database ("STS": "A")
+        // RECALIBRATED FILTER: Enforces tracking active devotees utilizing your true database status tag ("STS": "A")
         const activeDevoteeList = membersDataArray.filter(member => member.STS === "A" || member.STS === "a");
         displayWorkspace.value += `✓ Successfully loaded ${activeDevoteeList.length} active devotees from live raw storage!\n`;
         displayWorkspace.value += `Executing round-robin balancing allocations and writing visual style rules...\n`;
@@ -115,8 +115,8 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
             ' </Styles>\n';
 
         const targetGroups = ["WED", "FRI", "ARD", "MAH", "SPL"];
-        
         targetGroups.forEach(groupCode => {
+            // Enforce case-insensitive matching rules to fully catch 'Y' and 'y' data columns
             const groupDevotees = activeDevoteeList.filter(m => m[groupCode] === "Y" || m[groupCode] === "y");
             
             const sessionDatesColumns = getTargetSessionDatesForMonth(groupCode, targetMonthString);
@@ -130,12 +130,12 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
 
             spreadsheetStream += ` <Worksheet ss:Name="AS_${groupCode}_GROUP">\n  <Table>\n`;
             
-            // Apply Title Background Fill Color (#FFFF00)
+            // 1. Apply Title Background Fill Color (#FFFF00)
             spreadsheetStream += `   <Row ss:StyleID="TitleRow"><Cell><Data ss:Type="String">(AS ${groupCode} BHAJAN GROUP) - MONTHLY ALLOTMENT OF MANDATORY, SEMI-MANDATORY &amp; OPTIONAL OFFERINGS STATEMENT FOR ${targetMonthString}</Data></Cell></Row>\n`;
-            // Apply Sub-Header Background Fill Color (#C9DAF8)
+            // 2. Apply Sub-Header Background Fill Color (#C9DAF8)
             spreadsheetStream += `   <Row ss:StyleID="SubHeader"><Cell><Data ss:Type="String">ALLOTTEES' NAMES - SAIRAM</Data></Cell></Row>\n`;
             
-            // Apply Main Table Column Header Background Fill Color (#FF0000)
+            // 3. Apply Main Table Column Header Background Fill Color (#FF0000)
             spreadsheetStream += `   <Row ss:StyleID="TableHeaders">\n`;
             spreadsheetStream += `    <Cell><Data ss:Type="String">#</Data></Cell>\n`;
             spreadsheetStream += `    <Cell><Data ss:Type="String">OFFERINGS</Data></Cell>\n`;
@@ -143,6 +143,7 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
                 spreadsheetStream += `    <Cell><Data ss:Type="String">${d}</Data></Cell>\n`;
             });
             spreadsheetStream += `   </Row>\n`;
+
             BHAJAN_OFFERINGS_MASTER.forEach((offering, index) => {
                 let styleId = "MandatoryTop";
                 if (offering.type === "S_MID") styleId = "SemiMandatory";
