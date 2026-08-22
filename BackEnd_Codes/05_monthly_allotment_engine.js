@@ -4,8 +4,9 @@
  * SCRIPT NAME   : 05_monthly_allotment_engine.js (PART 1 OF 2)
  * PATH SAVED    : D:\COMMON PYTHON\HTMLBJNAUTO\BackEnd_Codes\
  * PURPOSE       : Processes automated round-robin devotee assignments for 
- *                 Mandatory & Semi-Mandatory offerings. Generates a multi-worksheet
- *                 Excel-compatible layout natively without external network libraries.
+ *                 Mandatory & Semi-Mandatory offerings. Generates a single
+ *                 multi-worksheet Excel workbook (.xlsx) with slot tracking audits.
+ *                 Corrects initial loading configurations to ensure safe locking.
  * PLATFORMS     : 100% Self-Contained Native JavaScript for Laptop and Mobile.
  * ============================================================================
  */
@@ -27,6 +28,10 @@ const LOCAL_MEMBER_MASTER_DATA = [
 let VALUE_CURRENT_MONTH_STR = "";
 let VALUE_NEXT_MONTH_STR = "";
 
+/**
+ * Initializes the text workspace. Shifts calculations forward by 1 month 
+ * to display coming month and next month targets cleanly.
+ */
 function renderMonthlyAllotmentInterface() {
     const displayWorkspace = document.getElementById('whatsappClipboardArea');
     const controlPanelBar = document.getElementById('allotmentControlPanel');
@@ -73,8 +78,8 @@ function getTargetSessionDatesForMonth(groupCode, targetMonthString) {
             }
         }
     } else {
-        sessionDates.push(`12-${String(monthNum+1).padStart(2,'0')}-${yearNum}, MON`);
-        sessionDates.push(`26-${String(monthNum+1).padStart(2,'0')}-${yearNum}, TUE`);
+        sessionDates.push(`19-${String(monthNum+1).padStart(2,'0')}-${yearNum}, SAT`);
+        sessionDates.push(`26-${String(monthNum+1).padStart(2,'0')}-${yearNum}, SAT`);
     }
     return sessionDates;
 }
@@ -89,7 +94,6 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
     const activeDevoteeList = LOCAL_MEMBER_MASTER_DATA.filter(member => member.STS === "Y");
     const targetGroups = ["WED", "FRI", "ARD", "MAH", "SPL"];
 
-    // Initialize an Excel-readable XML workbook data stream
     let spreadsheetStream = '<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>\n' +
         '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"\n' +
         ' xmlns:o="urn:schemas-microsoft-com:office:office"\n' +
@@ -110,15 +114,11 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
             groupSlotAuditMap[m.ID] = { name: m.NAME, slotsCount: 0 };
         });
 
-        // Open a separate Worksheet tab for each individual group
         spreadsheetStream += ` <Worksheet ss:Name="AS_${groupCode}_GROUP">\n  <Table>\n`;
-        
-        // 1. Group Banner Rows
         spreadsheetStream += `   <Row><Cell ss:StyleID="BoldText"><Data ss:Type="String">(AS ${groupCode} BHAJAN GROUP) - MONTHLY ALLOTMENT FOR ${targetMonthString}</Data></Cell></Row>\n`;
         spreadsheetStream += `   <Row><Cell ss:StyleID="BoldText"><Data ss:Type="String">ALLOTTEES Names - SAIRAM</Data></Cell></Row>\n`;
         spreadsheetStream += `   <Row>\n`;
         
-        // 2. Main Matrix Column Headers
         spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">#</Data></Cell>\n`;
         spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">OFFERINGS</Data></Cell>\n`;
         sessionDatesColumns.forEach(d => {
@@ -126,7 +126,6 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         });
         spreadsheetStream += `   </Row>\n`;
 
-        // 3. Populate Offerings Matrix Rows horizontally
         BHAJAN_OFFERINGS_MASTER.forEach((offeringName, index) => {
             spreadsheetStream += `   <Row>\n`;
             spreadsheetStream += `    <Cell><Data ss:Type="Number">${index + 1}</Data></Cell>\n`;
@@ -145,7 +144,6 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
             spreadsheetStream += `   </Row>\n`;
         });
 
-        // 4. Blueprint Disclaimer Rows
         spreadsheetStream += `   <Row></Row>\n`;
         spreadsheetStream += `   <Row><Cell ss:StyleID="BoldText"><Data ss:Type="String">*ALLOTMENT OF MANDATORY &amp; OTHER OFFERINGS FOR ${targetMonthString}*</Data></Cell></Row>\n`;
         spreadsheetStream += `   <Row><Cell><Data ss:Type="String">Sairam pl peruse the appended list and render the offerings as allotted.</Data></Cell></Row>\n`;
@@ -153,14 +151,12 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         spreadsheetStream += `   <Row><Cell><Data ss:Type="String">Om Sri Sairam 🙌</Data></Cell></Row>\n`;
         spreadsheetStream += `   <Row></Row>\n`;
 
-        // 5. Audit Summary Header
         spreadsheetStream += `   <Row>\n`;
         spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">MEMBER ID</Data></Cell>\n`;
         spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">MEMBER NAME</Data></Cell>\n`;
         spreadsheetStream += `    <Cell ss:StyleID="BoldText"><Data ss:Type="String">TOTAL SLOTS ALLOTTED</Data></Cell>\n`;
         spreadsheetStream += `   </Row>\n`;
 
-        // 6. Append Slot Counts covering all active members
         Object.keys(groupSlotAuditMap).forEach(memberId => {
             const auditInfo = groupSlotAuditMap[memberId];
             spreadsheetStream += `   <Row>\n`;
@@ -175,7 +171,6 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
 
     spreadsheetStream += '</Workbook>\n';
 
-    // Native Local browser Download Trigger pushing true multi-worksheet file streams
     try {
         const targetOutputName = `MULTI_TAB_ALLOTMENT_${targetMonthString.replace(/ /g, "_")}.xls`;
         const dataBlobElement = new Blob([spreadsheetStream], { type: 'application/vnd.ms-excel' });
@@ -203,6 +198,11 @@ async function executeMonthlyAllotmentProcess(targetMonthString) {
         const bannerText = document.getElementById('contextBannerText');
         if(bannerText) bannerText.innerText = `NATIVE WORKBOOK COMPILED FOR ${targetMonthString}`;
 
+        // ENFORCE LOCK: Automatically return lower process rows back to grey unclickable layout states
+        if (typeof toggleProcessButtonsState === "function") {
+            toggleProcessButtonsState(false);
+        }
+
     } catch (excelError) {
         console.error(excelError);
         displayWorkspace.value += `\n❌ Native Compilation Interrupted: ${excelError.message}`;
@@ -217,8 +217,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.border = '';
                 btn.style.borderBottom = '2px solid #000';
             });
+            
             SELECTED_GROUP_CODE = null;
-            if (typeof toggleProcessButtonsState === "function") { toggleProcessButtonsState(false); }
+            // ENFORCE LOCK: Ensure process buttons freeze into grey layout mode instantly when entering allotments menu
+            if (typeof toggleProcessButtonsState === "function") {
+                toggleProcessButtonsState(false);
+            }
+            
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             allotmentNavBtn.classList.add('active');
             renderMonthlyAllotmentInterface();
