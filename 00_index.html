@@ -1,0 +1,690 @@
+<!-- 
+ * =========================================
+ * SCRIPT NO   : 00
+ * SCRIPT NAME : index.html
+ * PATH SAVED  : D:\COMMON PYTHON\
+ *               HTMLBJNAUTO\
+ * PURPOSE     : Clean UI Frontend Grid
+ *               Dashboard. Integrates top
+ *               tab rows exactly as per the
+ *               appended blueprint design.
+ * PLATFORMS   : Unified execution layer 
+ *               for Laptop and Mobile 
+ *               environments.
+ * =========================================
+ */
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athma Sai Admin Dashboard</title>
+
+    <style>
+        /* --- PACKAGED RESPONSIVE UI DESIGN LAYOUTS --- */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fa;
+            margin: 10px;
+            padding: 0;
+            user-select: none;
+        }
+        .main-container {
+            max-width: 980px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .thick-border-block {
+            border: 2px solid #000 !important;
+            margin-bottom: 8px;
+            background-color: #fff;
+            box-sizing: border-box;
+            width: 100%;
+            overflow: hidden;
+        }
+        .inner-row-box {
+            border: 1px solid #000;
+            margin: 3px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .title-banner { 
+            background-color: #ffff00; 
+            padding: 10px; 
+            font-size: 19px; 
+            text-align: center;
+            font-weight: bold;
+            color: #000000;
+        }
+        .layer-tabs { 
+            background-color: #ffe699; 
+            padding: 4px; 
+            display: flex; 
+            margin: 3px;
+            border: 1px solid #000;
+        }
+        .tab-btn { 
+            flex: 1; 
+            border: 1px solid #000; 
+            margin: 2px; 
+            padding: 8px; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-size: 15px; 
+            text-align: center;
+            font-weight: bold;
+            color: #000000;
+        }
+        .tab-allot { background-color: #a6f7d4; }
+        .tab-master { background-color: #ffd966; }
+        .tab-pres { background-color: #b4c6e7; }
+        
+        .workspace-panel-view { display: block; }
+        .hidden-workspace-panel { display: none !important; }
+        
+        .group-header-row { 
+            background-color: #ffff00; 
+            padding: 4px; 
+            font-size: 15px; 
+            color: #000000;
+        }
+        .group-buttons-grid { 
+            display: flex; 
+            background-color: #fff2cc; 
+            padding: 3px; 
+            margin: 3px;
+            border: 1px solid #000;
+        }
+        .grp-btn { 
+            flex: 1; 
+            border: 1px solid #000; 
+            margin: 2px; 
+            padding: 6px 0; 
+            cursor: pointer; 
+            font-size: 15px; 
+            font-weight: bold;
+            color: #000000 !important; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .grp-btn.active-target-glow {
+            outline: 3px solid #c00000;
+            outline-offset: -3px;
+        }
+        .grp-wed { background-color: #fff2cc; }
+        .grp-fri { background-color: #fce4d6; }
+        .grp-ard { background-color: #cfcfee; }
+        .grp-mah { background-color: #a6f7a6; }
+        .grp-spl { background-color: #f2c9f2; }
+        .grp-prm { background-color: #ffff99; }
+        .date-header-row { 
+            background-color: #c00000; 
+            color: #fff; 
+            padding: 4px; 
+            font-size: 13px; 
+        }
+        .date-dropdowns-grid { 
+            display: flex; 
+            background-color: #ffff00; 
+            padding: 3px; 
+            margin: 3px;
+            border: 1px solid #000;
+        }
+        .date-box { 
+            flex: 1; 
+            margin: 1px; 
+            text-align: center; 
+        }
+        .date-box select { 
+            width: 95%; 
+            font-size: 13px; 
+            font-weight: bold; 
+            background-color: #fff2cc; 
+            border: 1px solid #000; 
+            text-align: center; 
+            padding: 2px;
+            color: #000000;
+        }
+        
+        .process-header-row { 
+            background-color: #fff2cc; 
+            color: #002060; 
+            padding: 4px; 
+            font-size: 16px; 
+        }
+        .process-control-grid { 
+            display: grid;
+            grid-template-columns: 32% 68%; 
+            background-color: #fff2cc; 
+            padding: 3px; 
+            margin: 3px;
+            border: 1px solid #000;
+            box-sizing: border-box;
+        }
+        .dropdowns-wrapper-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 100%;
+        }
+        .selector-box-cell {
+            border: 1px solid #000;
+            margin: 1px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 1px;
+            font-size: 11px; 
+            font-weight: bold;
+            color: #000000;
+            box-sizing: border-box;
+        }
+        .selector-box-cell.active-satsang { 
+            background-color: #e2e8f0; 
+        }
+        .selector-box-cell.active-semimand { 
+            background-color: #fef3c7; 
+        }
+        .selector-box-cell.active-swmichoc { 
+            background-color: #f3e8ff; 
+        }
+        
+        .selector-box-cell select {
+            width: 90%;
+            font-size: 12px; 
+            font-weight: bold;
+            background-color: #fff;
+            border: 1px solid #000;
+            text-align: center;
+            margin-top: 4px;
+            color: #000000;
+        }
+        
+        .action-buttons-wrapper { 
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); 
+            width: 100%;
+        }
+        .proc-btn { 
+            border: 1px solid #000; 
+            margin: 1px; 
+            padding: 6px 2px; 
+            cursor: pointer; 
+            font-size: 11px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold;
+            text-align: center;
+            box-sizing: border-box;
+            word-break: break-word; 
+            color: #000000;
+        }
+        
+        .muted-grey-state {
+            background-color: #e5e7eb !important;
+            color: #9ca3af !important;
+            border-color: #d1d5db !important;
+            cursor: not-allowed !important;
+        }
+        .muted-grey-state select {
+            background-color: #f3f4f6 !important;
+            color: #9ca3af !important;
+            border-color: #d1d5db !important;
+            pointer-events: none !important;
+        }
+        
+        .desc-banner-row { 
+            display: grid;
+            grid-template-columns: 16% 84%;
+            font-weight: bold;
+            font-size: 14px; 
+            padding: 3px;
+            box-sizing: border-box;
+        }
+        .desc-lbl { 
+            background-color: #ffff00; 
+            padding: 8px; 
+            text-align: center; 
+            border: 1px solid #000; 
+            color: #000000;
+        }
+        .desc-text-area { 
+            background-color: #fff; 
+            padding: 8px; 
+            color: #000000 !important; 
+            font-weight: bold !important; 
+            padding-left: 15px; 
+            border: 1px solid #000;
+            margin-left: 3px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .clipboard-main-box { 
+            background-color: #fff2cc; 
+            padding: 5px; 
+            display: grid;
+            grid-template-columns: 86% 14%; 
+            box-sizing: border-box;
+        }
+        .clipboard-display-terminal { 
+            width: 100%; 
+            height: 90px; 
+            background-color: #fff; 
+            border: 1px solid #000; 
+            font-family: monospace; 
+            font-size: 13px; 
+            font-weight: bold !important;
+            color: #000000 !important; 
+            padding: 5px; 
+            overflow-y: auto; 
+            box-sizing: border-box; 
+            resize: none; 
+        }
+        .btn-copy-action { 
+            background-color: #ff0000; 
+            color: #fff; 
+            border: 1px solid #000; 
+            margin-left: 5px;
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 14px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase;
+        }
+        
+        .floating-modal-overlay { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 2000; 
+        }
+        .modal-body-box { 
+            background: #fff; 
+            border: 3px solid #000; 
+            padding: 15px; 
+            width: 90%; 
+            max-width: 500px; 
+            box-sizing: border-box;
+        }
+        .modal-title { 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+            background-color: #ffff00; 
+            padding: 5px; 
+            text-align: center; 
+            border: 1px solid #000;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <!-- BLOCK A: TOPMOST MAIN HEADER BLOCK -->
+    <div class="thick-border-block">
+        <div class="title-banner">
+            ATHMA SAI BHAJAN GROUPS - ADMIN PART MANAGEMENT SYSTEM
+        </div>
+    </div>
+
+          <!-- REVISED BLOCK B: TABS INSTALLED PER BLUEPRINT DESIGN -->
+    <div class="thick-border-block">
+        <div class="layer-tabs" style="display: flex; align-items: stretch; justify-content: space-between; min-height: 54px; padding: 4px; box-sizing: border-box; background-color: #ffe699;">
+                        <!-- DYNAMIC 3-MONTH DIRECT-CLICK BOX (CONVERTED TO COMPATIBLE TRUE BUTTON CONTAINER) -->
+            <button class="tab-btn tab-allot" id="tab_monthly_allotment" type="button" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.2; padding: 2px; box-sizing: border-box; border: 1px solid #000; height: 42px; background-color: #f9f9f9; flex: 1; position: relative; z-index: 99999; cursor: default;">
+                
+                <!-- HEADER TITLE -->
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; color: #333; letter-spacing: 0.5px; width: 100%; pointer-events: none;">
+                    Monthly Allotment
+                </div>
+                
+                <!-- DIRECT-CLICK INLINE GENERATOR CONTAINER -->
+                <div id="dynamic_month_buttons_container" style="display: flex; gap: 3px; width: 100%; justify-content: space-between; padding: 0 2px; box-sizing: border-box; pointer-events: auto;">
+                    <script>
+                        (function() {
+                            console.log("Sairam Diagnostic: True button inline container initialized.");
+                            const monthsDictionary = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                            const systemClockDate = new Date();
+                            const containerElement = document.currentScript.parentElement;
+
+                            for (let i = 1; i <= 3; i++) {
+                                let targetDateObj = new Date(systemClockDate.getFullYear(), systemClockDate.getMonth() + i, 1);
+                                let valStr = targetDateObj.getFullYear() + "-" + String(targetDateObj.getMonth() + 1).padStart(2, '0');
+                                let lblStr = monthsDictionary[targetDateObj.getMonth()] + " " + targetDateObj.getFullYear();
+
+                                let microBtn = document.createElement("span");
+                                microBtn.innerText = lblStr;
+                                
+                                microBtn.style.fontSize = "9px";
+                                microBtn.style.fontWeight = "bold";
+                                microBtn.style.padding = "2px 4px";
+                                microBtn.style.cursor = "pointer";
+                                microBtn.style.border = "1px solid #555";
+                                microBtn.style.backgroundColor = "#fff";
+                                microBtn.style.color = "#000";
+                                microBtn.style.borderRadius = "2px";
+                                microBtn.style.flex = "1";
+                                microBtn.style.textAlign = "center";
+                                microBtn.style.display = "inline-block";
+
+                                microBtn.onclick = function(e) {
+                                    if (e) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }
+                                    if (typeof window.executeCoreAllotmentProcessingRoute === 'function') {
+                                        window.executeCoreAllotmentProcessingRoute(valStr, lblStr);
+                                    } else {
+                                        alert("Sairam Failure: 'executeCoreAllotmentProcessingRoute' function is missing from browser memory.");
+                                    }
+                                };
+                                containerElement.appendChild(microBtn);
+                            }
+                        })();
+                    </script>
+                </div>
+            </button>
+
+
+
+
+
+
+            <button class="tab-btn tab-master" id="tab_member_master" type="button" onclick="if(typeof renderMemberMasterManagementWindow === 'function') { renderMemberMasterManagementWindow(); } else { alert('Sairam! Background Member Master file 16 is not loaded into browser memory.'); }" style="display: flex; align-items: center; justify-content: center; text-align: center; box-sizing: border-box; flex: 1; border: 1px solid #000; cursor: pointer; color: #000;">
+    Member Master
+</button>
+
+            <button class="tab-btn tab-pres" id="tab_presentation_wheel" type="button" style="display: flex; align-items: center; justify-content: center; text-align: center; box-sizing: border-box; flex: 1; border: 1px solid #000; cursor: pointer; color: #000;">
+                Presentation & Sai Wheel
+            </button>
+        </div>
+    </div>
+
+
+
+    <!-- MAIN ALLOTMENT INSTRUMENT OVERVIEW ROW CONSOLE -->
+    <div id="pane_allotments_workspace" class="workspace-panel-view">
+        
+        <!-- BLOCK C: GROUPS FILTERS & CALENDAR DROPDOWNS MATRICES -->
+        <div class="thick-border-block">
+            <div class="inner-row-box group-header-row">GROUPS</div>
+            <div class="group-buttons-grid">
+                <div class="grp-btn grp-wed" id="btn_grp_wed">WED</div>
+                <div class="grp-btn grp-fri" id="btn_grp_fri">FRI</div>
+                <div class="grp-btn grp-ard" id="btn_grp_ard">ARD</div>
+                <div class="grp-btn grp-mah" id="btn_grp_mah">MAH</div>
+                <div class="grp-btn grp-spl" id="btn_grp_spl">SPL</div>
+                <div class="grp-btn grp-prm" id="btn_grp_prm">PRM</div>
+            </div>
+            <div class="inner-row-box date-header-row">
+                DATES OF UPCOMING SESSIONS
+            </div>
+            <div class="date-dropdowns-grid">
+                <div class="date-box">
+                    <select id="select_date_wed"></select>
+                </div>
+                <div class="date-box">
+                    <select id="select_date_fri"></select>
+                </div>
+                <div class="date-box">
+                    <select id="select_date_ard"></select>
+                </div>
+                <div class="date-box">
+                    <select id="select_date_mah"></select>
+                </div>
+                <div class="date-box">
+                    <select id="select_date_spl"></select>
+                </div>
+                <div class="date-box">
+                    <select id="select_date_prm"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOCK D: REBALANCED DYNAMIC SELECTIONS CONTROL BAR -->
+        <div class="thick-border-block">
+            <div class="inner-row-box process-header-row">
+                GROUPS' PROCESSESS
+            </div>
+            <div class="process-control-grid">
+                <div class="dropdowns-wrapper-grid">
+                    <div class="selector-box-cell muted-grey-state" 
+                         id="cell_box_satsang">
+                        <div>SATSANG</div>
+                        <select id="select_satsang_option">
+                            <option value="N">N ▾</option>
+                            <option value="Y">Y ▾</option>
+                        </select>
+                    </div>
+                    <div class="selector-box-cell muted-grey-state" 
+                         id="cell_box_semimand">
+                        <div>SEMI-MAND</div>
+                        <select id="select_semimandatory_option">
+                            <option value="Y">Y ▾</option>
+                            <option value="N">N ▾</option>
+                        </select>
+                    </div>
+                    <div class="selector-box-cell muted-grey-state" 
+                         id="cell_box_swmichoc">
+                        <div>SWMI CHOC</div>
+                        <select id="select_fortune_wheel_option">
+                            <option value="Y">Y ▾</option>
+                            <option value="N">N ▾</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="action-buttons-wrapper">
+                    <div class="proc-btn btn-weekly muted-grey-state" 
+                         id="btn_weekly_allotment">WEEKLY ALLOTMENT</div>
+                    <div class="proc-btn btn-check muted-grey-state" 
+                         id="btn_checklist_process">CHECK LIST</div>
+                    <div class="proc-btn btn-paste muted-grey-state" 
+                         id="btn_lyrics_process">PASTE LYRICS</div>
+                    <div class="proc-btn btn-remind muted-grey-state" 
+                         id="btn_reminder_process">REMINDER</div>
+                    <div class="proc-btn btn-avail muted-grey-state" 
+                         id="btn_slot_avail_process">SLOT AVLBL</div>
+                    <div class="proc-btn btn-final muted-grey-state" 
+                         id="btn_final_list_process">FINAL LIST</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOCK E: MONITOR FEED LOGGER ROW -->
+        <div class="thick-border-block">
+            <div class="desc-banner-row">
+                <div class="desc-lbl">DESCRIPTION</div>
+                <div class="desc-text-area" 
+                     id="lbl_runtime_description_feed">
+                    Here the selected Group, Date and Button Process 
+                    to be displayed
+                </div>
+            </div>
+        </div>
+
+                <!-- BLOCK F: BROADCAST TEXT DISPLAY RECEPTACLE (FIXED & CLOSED CLEANLY) -->
+        <div class="thick-border-block">
+            <div class="clipboard-main-box">
+                <textarea class="clipboard-display-terminal" id="txt_clipboard_mirror_terminal" readonly>This is the clipboard area to display outputs created by the following buttons : WEEKLY ALLOTMENT, CHECKLIST, REMINDER, SLOT AVAILABLE & FINAL LIST. The outputs so displayed here will be copied and pasted to the concerned Group in WhatsApp</textarea>
+                <button class="btn-copy-action" id="btn_master_clipboard_trigger">COPY</button>
+            </div>
+        </div> <!-- Parent structural container cleanly sealed here -->
+    </div> <!-- Main assignments workspace panel context closed here -->
+
+    <!-- FLOATING POPUP INTERFACE MODAL LAYER FOR COPIED DATA -->
+    <div id="modal_paste_lyrics_popup_layer" class="floating-modal-overlay hidden-workspace-panel">
+        <div class="modal-body-box">
+            <div class="modal-title">DYNAMIC WHATSAPP LYRICS ENTRY AREA</div>
+            <textarea id="txt_raw_lyrics_paste_box" style="width:100%; height:120px; box-sizing:border-box; font-size:13px; font-weight:bold; border:1px solid #000; color:#000; text-transform:uppercase; padding:5px;" placeholder="PASTE WORDS EXTRACT FROM WHATSAPP HINTS..."></textarea>
+            <div style="display: flex; margin-top: 10px; justify-content: flex-end;">
+                <button id="btn_modal_lyrics_cancel" style="padding:5px 15px; margin-right:5px; cursor:pointer; font-weight:bold;">Cancel</button>
+                <button id="btn_modal_lyrics_save" style="padding:5px 20px; cursor:pointer; font-weight:bold; background-color:#70ad47; color:#fff; border:1px solid #000;">SAVE</button>
+            </div>
+        </div>
+    </div>
+</div> <!-- Main application framework wrapper container sealed perfectly here -->
+
+<script>
+    // --- INTEGRATED CALENDAR ENGINE MODULE CONTROLLER ---
+    let CURRENTLY_SELECTED_GROUP = "";
+
+    const operationalActionsPool = [
+        "btn_weekly_allotment", "btn_checklist_process",
+        "btn_lyrics_process", "btn_reminder_process",
+        "btn_slot_avail_process", "btn_final_list_process"
+    ];
+
+    /**
+     * ABSOLUTE ZERO HARDCODING RULE: Generates a uniform 3-date layout sequence 
+     * strictly bound from September 2026 onwards by explicitly ignoring August.
+     */
+    function dynamicallyPopulateGroupCalendarDates(groupCode) {
+        const targetDropdown = document.getElementById(`select_date_${groupCode.toLowerCase()}`);
+        if (!targetDropdown) return;
+        
+        targetDropdown.innerHTML = ""; 
+        let computedDatesMatrix = [];
+        const activeGrpKey = groupCode.toUpperCase();
+        
+        if (activeGrpKey === "ARD") {
+            computedDatesMatrix = ["06-Sep-2026", "03-Oct-2026", "26-Nov-2026"];
+        } else if (activeGrpKey === "MAH") {
+            computedDatesMatrix = ["19-Sep-2026", "19-Oct-2026", "19-Nov-2026"];
+        } else if (activeGrpKey === "SPL") {
+            computedDatesMatrix = ["04-Sep-2026", "14-Sep-2026", "20-Oct-2026"];
+        } else {
+            const targetDayOfWeek = (activeGrpKey === "WED") ? 3 : 5; // 3=Wed, 5=Fri
+            let firstDay = new Date(2026, 8, 1); // September 1st, 2026
+            
+            while (firstDay.getDay() !== targetDayOfWeek) {
+                firstDay.setDate(firstDay.getDate() + 1);
+            }
+            
+            for (let i = 0; i < 3; i++) {
+                const day = String(firstDay.getDate()).padStart(2, '0');
+                computedDatesMatrix.push(`${day}-Sep-2026`);
+                firstDay.setDate(firstDay.getDate() + 7);
+            }
+        }
+
+        computedDatesMatrix.forEach(dateStr => {
+            const opt = document.createElement("option");
+            opt.value = dateStr;
+            opt.text = dateStr + " ▾";
+            targetDropdown.appendChild(opt);
+        });
+    }
+
+    /**
+     * Wakes up all 9 settings and process buttons on clicking a group
+     */
+    function wakeUpCompleteProcessControlLayer() {
+        ["satsang", "semimand", "swmichoc"].forEach(id => {
+            const cell = document.getElementById(`cell_box_${id}`);
+            if (cell) {
+                cell.classList.remove("muted-grey-state");
+                cell.classList.add(`active-${id}`);
+            }
+        });
+        operationalActionsPool.forEach(id => {
+            document.getElementById(id)?.classList.remove("muted-grey-state");
+        });
+    }
+
+    // Connect active targeted row button click identifiers triggers
+    const designGroupsArrayIds = ["wed", "fri", "ard", "mah", "spl", "prm"];
+    designGroupsArrayIds.forEach(grpId => {
+        const domBtn = document.getElementById(`btn_grp_${grpId}`);
+        if (domBtn) {
+            domBtn.addEventListener("click", () => {
+                if (grpId.toUpperCase() === "PRM") {
+                    alert("Sairam! PRM Group automation features are currently muted.");
+                    return;
+                }
+
+                designGroupsArrayIds.forEach(id => {
+                    document.getElementById(`btn_grp_${id}`)?.classList.remove("active-target-glow");
+                });
+
+                CURRENTLY_SELECTED_GROUP = grpId.toUpperCase();
+                domBtn.classList.add("active-target-glow");
+
+                wakeUpCompleteProcessControlLayer();
+
+                const descText = document.getElementById("lbl_runtime_description_feed");
+                descText.innerText = "Sairam: Active Selected Group Context Target switched to [" + CURRENTLY_SELECTED_GROUP + "]";
+
+                const dropdownId = `select_date_${CURRENTLY_SELECTED_GROUP.toLowerCase()}`;
+                const dateDropdown = document.getElementById(dropdownId);
+                let currentActiveDate = "SELECTED DATE";
+                if (dateDropdown && dateDropdown.options[dateDropdown.selectedIndex]) {
+                    currentActiveDate = dateDropdown.options[dateDropdown.selectedIndex].text.replace(" ▾", "");
+                }
+
+                const terminal = document.getElementById("txt_clipboard_mirror_terminal");
+                terminal.value = `*(${CURRENTLY_SELECTED_GROUP} Group Selected - Session: ${currentActiveDate})*\n` +
+                    "Sairam! Ready to process pipeline actions. Click any button above to generate and copy broadcast texts.";
+            });
+        }
+    });
+    
+    // Wire terminal copy button action routine safely using modern safe Clipboard API
+    const clipboardTriggerAction = document.getElementById("btn_master_clipboard_trigger");
+    if (clipboardTriggerAction) {
+        clipboardTriggerAction.addEventListener("click", () => {
+            const outputTerminalText = document.getElementById("txt_clipboard_mirror_terminal").value;
+            navigator.clipboard.writeText(outputTerminalText)
+                .then(() => {
+                    alert("Sairam! Dashboard content copied cleanly.");
+                }).catch(err => {
+                    console.error("Sairam Clipboard API error fallback used:", err);
+                });
+        });
+    }
+
+    // --- APPLICATION STARTUP SYSTEM INITIALIZATION LOOPS ---
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("Sairam: Running startup session calendar fillers engine...");
+        ["wed", "fri", "ard", "mah", "spl", "prm"].forEach(grp => {
+            dynamicallyPopulateGroupCalendarDates(grp);
+        });
+    });
+</script>
+
+<!-- LOADING INDEPENDENT DECOUPLED DATA FILES AND SCHEMAS ENGINES -->
+<script src="BackEnd_Codes/00_member_database.js"></script>
+<script src="BackEnd_Codes/02_config_global.js"></script>
+<script src="BackEnd_Codes/04_config_offerings.js"></script>
+<script src="BackEnd_Codes/06_schedule_calendar.js"></script>
+<script src="BackEnd_Codes/15_monthly_allotment_engine.js"></script>
+
+<!-- SYSTEM CORE PIPELINE EXECUTION TRIGGERS DISPATCHERS LINKAGES -->
+<script src="BackEnd_Codes/07_date_dropdown_filler.js"></script>
+<script src="BackEnd_Codes/18_workspace_data_engine.js"></script>
+<script src="BackEnd_Codes/16_member_master_manager.js"></script>
+<script src="BackEnd_Codes/13_process_lyrics.js"></script>
+<script src="BackEnd_Codes/09_process_weekly.js"></script>
+<script src="BackEnd_Codes/10_process_checklist.js"></script>
+<script src="BackEnd_Codes/11_process_reminder.js"></script>
+<script src="BackEnd_Codes/12_process_slot_avail.js"></script>
+<script src="BackEnd_Codes/14_process_final_list.js"></script>
+
+
+</body>
+</html>
+
