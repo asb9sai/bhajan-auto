@@ -7,15 +7,16 @@
  * ============================================================================
  */
 
-// 🚀 BACKGROUND ASSET LOADER: Loads spreadsheet tools dynamically so dashboard remains purely visual
+// 🚀 BACKGROUND ASSET LOADER: Loads toolkit directly from your local repository folder layout
 if (typeof XLSX === 'undefined') {
     console.log("Sairam: Loading Excel core engine toolkit into background memory layers...");
     const sheetJsScript = document.createElement('script');
-    sheetJsScript.src = "https://cloudflare.com";
+    sheetJsScript.src = "BackEnd_Codes/01_xlsx_core_engine.js";
     document.head.appendChild(sheetJsScript);
 }
 
 let SYSTEM_COMPLED_ALLOTMENTS_TRACKER = {};
+
 
 function initializeMonthlyAllotmentInterface() {
     console.log("Sairam: Initializing dynamic 3-month button linkage layout...");
