@@ -205,8 +205,10 @@ async function generateMonthlyAllotmentWorkbook() {
 
     try {
         // 🌟 NATIVE WEB PROTOCOL FETCH: Reads the template silently from your live server repository path
-        const responseFile = await fetch('OUTPUTS/MTHLY_BJN_FMT.xlsx');
+                // 🌟 NATIVE WEB PROTOCOL FETCH WITH LIVE CACHE BREAKER
+        const responseFile = await fetch('OUTPUTS/MTHLY_BJN_FMT.xlsx?v=' + new Date().getTime());
         if (!responseFile.ok) {
+
             throw new Error("Master template file 'OUTPUTS/MTHLY_BJN_FMT.xlsx' was not found in the root directory tree.");
         }
         const dataBuffer = await responseFile.arrayBuffer();
