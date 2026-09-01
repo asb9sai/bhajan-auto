@@ -8,8 +8,17 @@
  * ============================================================================
  */
 
+// 🚀 SELF-CONTAINED ENGINE INJECTOR: Load SheetJS dynamically so dashboard remains purely visual
+if (typeof XLSX === 'undefined') {
+    console.log("Sairam: Loading SheetJS engine tool dependency directly into script memory...");
+    const sheetJsScriptTag = document.createElement('script');
+    sheetJsScriptTag.src = "https://jsdelivr.net";
+    document.head.appendChild(sheetJsScriptTag);
+}
+
 // Central session state tracking map to prevent duplicate database calculations
 let SYSTEM_COMPLED_ALLOTMENTS_TRACKER = {};
+
 
 /**
  * Verifies and hooks interface containers to engine structures safely
