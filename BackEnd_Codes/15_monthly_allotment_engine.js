@@ -1,21 +1,14 @@
 /**
  * ============================================================================
- * SCRIPT NO     : 15 (PART 1 OF 2) - GITHUB PRODUCTION VERSION
+ * SCRIPT NO     : 15 - GITHUB PRODUCTION VERSION
  * PATH SAVED    : BackEnd_Codes/15_monthly_allotment_engine.js
  * PURPOSE       : Balanced rotation algorithm matrix that compiles allotments.
  * PLATFORMS     : Fully optimized for live GitHub Pages (Laptop & Mobile).
  * ============================================================================
  */
 
-// 🚀 NATIVE MOBILE-COMPATIBLE SPREADSHEET ENGINE
-// Fully self-contained layout generator that requires no external file loads!
-let SYSTEM_COMPLED_ALLOTMENTS_TRACKER = {};
-
 function initializeMonthlyAllotmentInterface() {
     console.log("Sairam: Initializing dynamic 3-month button linkage layout...");
-    const buttonsContainer = document.getElementById("dynamic_month_buttons_container");
-    if (!buttonsContainer) return;
-    console.log("Sairam: Dynamic 3-month buttons successfully linked to memory layers.");
 }
 
 function executeCoreAllotmentProcessingRoute(targetMonthValue, targetMonthLabel) {
@@ -24,9 +17,7 @@ function executeCoreAllotmentProcessingRoute(targetMonthValue, targetMonthLabel)
         return;
     }
 
-    console.log(`Sairam: Initiating calculation matrix allocation pipelines targeting: ${targetMonthLabel}`);
-
-    // Read your exact uppercase JSON database fields ("STS", "ID", "NAME") safely
+    // Filter strictly for active members using your exact uppercase JSON keys
     let activeMembersPool = JSON.parse(JSON.stringify(window.GLOBAL_MASTER_MEMBER_ROWS.filter(m => m.STS === "A")));
     if (activeMembersPool.length === 0) {
         alert("Sairam! No active members with status 'A' found in your database records.");
@@ -36,14 +27,12 @@ function executeCoreAllotmentProcessingRoute(targetMonthValue, targetMonthLabel)
     const activeWorksheetsList = ["WED", "FRI", "ARD", "MAH", "SPL"];
     const octoberWednesdayDays = ["07-Oct-2026, WED", "14-Oct-2026, WED", "21-Oct-2026, WED", "28-Oct-2026, WED", "VACANT SESSION"];
 
-    // 🌟 HTML-SPREADHEET FORMAT ENGINES: Generates an XML structure that all phones and laptops open in Excel natively
-    let spreadsheetDataContent = 'xmlns:x="urn:schemas-microsoft-com:office:excel" ';
-    spreadsheetDataContent += 'xmlns="http://w3.org">\n<head><meta charset="utf-8">\n<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>';
-    
+    // Native self-contained HTML-Spreadsheet layout engine (No external files needed!)
+    let excelContent = 'xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://w3.org">\n<head><meta charset="utf-8">\n<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>';
     activeWorksheetsList.forEach(sheetId => {
-        spreadsheetDataContent += `<x:ExcelWorksheet><x:Name>${sheetId}</x:Name><x:WorksheetSource/></x:ExcelWorksheet>`;
+        excelContent += `<x:ExcelWorksheet><x:Name>${sheetId}</x:Name><x:WorksheetSource/></x:ExcelWorksheet>`;
     });
-    spreadsheetDataContent += '</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>\n<body>';
+    excelContent += '</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>\n<body>';
 
     activeWorksheetsList.forEach(groupId => {
         let groupEligiblePool = activeMembersPool.filter(m => m[groupId] === "Y");
@@ -57,14 +46,14 @@ function executeCoreAllotmentProcessingRoute(targetMonthValue, targetMonthLabel)
         let tallyMap = {};
         groupEligiblePool.forEach(m => tallyMap[m.ID] = 0);
 
-        spreadsheetDataContent += `<table border="1">\n<tr><th colspan="6" style="background-color:#ffe699;font-weight:bold;">(${groupId} BHAJAN GROUP) - MONTHLY ALLOTMENT STATEMENT FOR ${targetMonthLabel.toUpperCase()}</th></tr>\n`;
-        spreadsheetDataContent += `<tr><th colspan="6" style="font-weight:bold;text-align:center;">ALLOTTEES' NAMES - SAIRAM</th></tr>\n`;
-        spreadsheetDataContent += '<tr><th style="background-color:#d9d9d9;">#</th><th style="background-color:#d9d9d9;">OFFERINGS</th>';
+        excelContent += `<table border="1">\n<tr><th colspan="6" style="background-color:#ffe699;font-weight:bold;">(${groupId} BHAJAN GROUP) - MONTHLY ALLOTMENT STATEMENT FOR ${targetMonthLabel.toUpperCase()}</th></tr>\n`;
+        excelContent += `<tr><th colspan="6" style="font-weight:bold;text-align:center;">ALLOTTEES' NAMES - SAIRAM</th></tr>\n`;
+        excelContent += '<tr><th style="background-color:#d9d9d9;">#</th><th style="background-color:#d9d9d9;">OFFERINGS</th>';
         
         for (let i = 0; i < 5; i++) {
-            spreadsheetDataContent += `<th style="background-color:#cfdfec;">${groupDays[i]}</th>`;
+            excelContent += `<th style="background-color:#cfdfec;">${groupDays[i]}</th>`;
         }
-        spreadsheetDataContent += '</tr>\n';
+        excelContent += '</tr>\n';
 
         const offeringsLabels = [
             "GANESH BHAJAN", "GURU BHAJAN", "DEVI BHAJAN", "SARVA DHARMA BHAJAN", "RAMAR BHAJAN",
@@ -73,7 +62,7 @@ function executeCoreAllotmentProcessingRoute(targetMonthValue, targetMonthLabel)
         ];
 
         offeringsLabels.forEach((offeringText, rowIdx) => {
-            spreadsheetDataContent += `<tr><td>${rowIdx + 1}</td><td style="font-weight:bold;">${offeringText}</td>`;
+            excelContent += `<tr><td>${rowIdx + 1}</td><td style="font-weight:bold;">${offeringText}</td>`;
             
             for (let colIdx = 0; colIdx < 5; colIdx++) {
                 let isSessionVacant = (groupDays[colIdx] === "VACANT SESSION" || groupDays[colIdx] === "");
@@ -85,28 +74,27 @@ function executeCoreAllotmentProcessingRoute(targetMonthValue, targetMonthLabel)
                     tallyMap[candidate.ID] = (tallyMap[candidate.ID] || 0) + 1;
                     groupEligiblePool.push(candidate);
                 }
-                spreadsheetDataContent += `<td>${assignedName}</td>`;
+                excelContent += `<td>${assignedName}</td>`;
             }
-            spreadsheetDataContent += '</tr>\n';
+            excelContent += '</tr>\n';
         });
 
-        // Add spacing before Allotment Details registry section rows
-        spreadsheetDataContent += '<tr><td colspan="6" style="border:none;height:20px;"></td></tr>\n';
-        spreadsheetDataContent += '<tr><th style="background-color:#ffe699;">ID</th><th colspan="3" style="background-color:#ffe699;">MEMBERS\' NAME - SAIRAM</th><th colspan="2" style="background-color:#ffe699;">NO OF SLOTS ALLOTTED</th></tr>\n';
+        excelContent += '<tr><td colspan="6" style="border:none;height:20px;"></td></tr>\n';
+        excelContent += '<tr><th style="background-color:#ffe699;">ID</th><th colspan="3" style="background-color:#ffe699;">MEMBERS\' NAME - SAIRAM</th><th colspan="2" style="background-color:#ffe699;">NO OF SLOTS ALLOTTED</th></tr>\n';
 
         let groupSortedMembers = window.GLOBAL_MASTER_MEMBER_ROWS.filter(m => m[groupId] === "Y").sort((a, b) => Number(a.ID) - Number(b.ID));
         groupSortedMembers.forEach(memberProfile => {
             let mCount = tallyMap[memberProfile.ID] || 0;
-            spreadsheetDataContent += `<tr><td>${memberProfile.ID}</td><td colspan="3">${memberProfile.NAME.toUpperCase()}</td><td colspan="2" align="center">${mCount}</td></tr>\n`;
+            excelContent += `<tr><td>${memberProfile.ID}</td><td colspan="3">${memberProfile.NAME.toUpperCase()}</td><td colspan="2" align="center">${mCount}</td></tr>\n`;
         });
 
-        spreadsheetDataContent += '</table>\n<br><br>\n';
+        excelContent += '</table>\n<br><br>\n';
     });
 
-    spreadsheetDataContent += '</body>\n</html>';
+    excelContent += '</body>\n</html>';
 
-    // 🚀 STABLE CROSS-PLATFORM DOWNLOAD STREAM TRIGGER (FOR WINDOWS LAPTOP & ANDROID PHONES)
-    const fileBlobContainer = new Blob([spreadsheetDataContent], { type: "application/vnd.ms-excel;charset=utf-8;" });
+    // Instant download link trigger for laptop and mobile memory
+    const fileBlobContainer = new Blob([excelContent], { type: "application/vnd.ms-excel;charset=utf-8;" });
     const virtualAnchor = document.createElement("a");
     virtualAnchor.href = URL.createObjectURL(fileBlobContainer);
     virtualAnchor.download = `SAIRAM_BALANCED_ALLOTMENT_${targetMonthLabel.replace(" ", "_")}.xls`;
@@ -114,7 +102,7 @@ function executeCoreAllotmentProcessingRoute(targetMonthValue, targetMonthLabel)
     virtualAnchor.click();
     document.body.removeChild(virtualAnchor);
 
-    // Update clipboard mirror terminal text box simultaneously
+    // Populate the dashboard terminal text box
     const dashboardTerminalBox = document.getElementById("txt_clipboard_mirror_terminal");
     if (dashboardTerminalBox) {
         let monthlyBroadcastText = `*ALLOTMENT OF MANDATORY & OTHER OFFERINGS FOR ${targetMonthLabel.toUpperCase()}*\n\n`;
@@ -123,7 +111,7 @@ function executeCoreAllotmentProcessingRoute(targetMonthValue, targetMonthLabel)
         dashboardTerminalBox.value = monthlyBroadcastText;
     }
 
-    alert(`Sairam Success! Your compiled allotment spreadsheet downloaded cleanly to your device!`);
+    alert(`Sairam Success! Your compiled spreadsheet has downloaded cleanly!`);
 }
 
 window.executeCoreAllotmentProcessingRoute = executeCoreAllotmentProcessingRoute;
